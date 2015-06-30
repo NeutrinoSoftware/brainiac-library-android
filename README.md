@@ -64,6 +64,7 @@ brainiacManager.startScan(onConnectCallback);
 # Reference
 ## Value
 Value - class which represents raw values received from Braniac accessory. It contains a few fields: 
+
 1. channel1 - brain activity measure for channel 1 (T3) - double
 2. channel2 - brain activity measure for channel 2 (O1) - double
 3. channel3 - brain activity measure for channel 3 (T4) - double
@@ -71,6 +72,7 @@ Value - class which represents raw values received from Braniac accessory. It co
 
 ##FftValue
 FftValue - class which represents transformed values. It contains a few fields:
+
 1. data1 - dominant frequency value for current time range and frequencies range 3-7 Hz - int
 2. data2 - dominant frequency value for current time range and frequencies range 7-13 Hz - int
 3. data3 - dominant frequency value for current time range and frequencies range 14-24 Hz - int
