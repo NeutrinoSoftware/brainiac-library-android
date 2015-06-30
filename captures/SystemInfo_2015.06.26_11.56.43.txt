@@ -1,0 +1,93 @@
+Applications Graphics Acceleration Info:
+Uptime: 27370082 Realtime: 51421357
+
+** Graphics info for pid 28575 [net.neutrinosoft.brainactivity] **
+
+Recent DisplayList operations
+RestoreToCount
+DrawRect
+DrawRect
+DrawText
+DrawRect
+DrawLines
+DrawRect
+DrawPath
+DrawPath
+DrawPath
+DrawBitmap
+multiDraw
+  DrawText
+DrawRoundRect
+DrawRoundRect
+DrawText
+DrawText
+DrawRect
+DrawLines
+DrawRect
+DrawPath
+DrawPath
+DrawPath
+DrawBitmap
+DrawRoundRect
+DrawRoundRect
+DrawText
+DrawText
+DrawRect
+DrawLines
+DrawRect
+DrawPath
+DrawPath
+DrawPath
+DrawBitmap
+multiDraw
+  DrawText
+DrawRoundRect
+DrawRoundRect
+DrawText
+DrawText
+DrawRect
+DrawLines
+DrawPath
+DrawPath
+DrawPath
+DrawBitmap
+DrawRoundRect
+DrawRoundRect
+DrawText
+
+Caches:
+Current memory usage / total memory usage (bytes):
+  TextureCache          6767712 / 75497472
+  LayerCache                  0 / 50331648 (numLayers = 0)
+  Layers total          0 (numLayers = 0)
+  RenderBufferCache           0 /  8388608
+  GradientCache               0 /  1048576
+  PathCache              433500 / 33554432
+  TessellationCache       21384 /  1048576
+  TextDropShadowCache         0 /  6291456
+  PatchCache                  0 /   131072
+  FontRenderer 0 A8     1048576 /  1048576
+  FontRenderer 0 RGBA         0 /        0
+  FontRenderer 0 total  1048576 /  1048576
+Other:
+  FboCache                    0 /        0
+Total memory usage:
+  8271172 bytes, 7.89 MB
+
+Profile data in ms:
+
+	net.neutrinosoft.brainactivity/net.neutrinosoft.brainactivity.activities.StartUpActivity/android.view.ViewRootImpl@b9fb5c3 (visibility=8)
+	net.neutrinosoft.brainactivity/net.neutrinosoft.brainactivity.activities.MainActivity/android.view.ViewRootImpl@3433fe40 (visibility=0)
+View hierarchy:
+
+  net.neutrinosoft.brainactivity/net.neutrinosoft.brainactivity.activities.StartUpActivity/android.view.ViewRootImpl@b9fb5c3
+  16 views, 12,75 kB of display lists
+
+  net.neutrinosoft.brainactivity/net.neutrinosoft.brainactivity.activities.MainActivity/android.view.ViewRootImpl@3433fe40
+  72 views, 87,71 kB of display lists
+
+
+Total ViewRootImpl: 2
+Total Views:        88
+Total DisplayList:  100,46 kB
+
