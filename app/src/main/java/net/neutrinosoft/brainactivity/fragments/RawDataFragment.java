@@ -31,6 +31,7 @@ import net.neutrinosoft.brainactivity.common.ValueZoom;
 import net.neutrinosoft.brainiac.Value;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -57,12 +58,20 @@ public class RawDataFragment extends Fragment {
     TextView valueZoomLabel;
 
 
+    List<Value> values = new ArrayList<>();
+
     List<String> xValuesList;
     List<List<Entry>> entriesList;
     private TimeZoom timeZoom = TimeZoom.Five;
     private ValueZoom valueZoom = ValueZoom.TwoHundred;
 
     private RawDataBroadcastReceiver rawDataBroadcastReceiver;
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
@@ -209,7 +218,8 @@ public class RawDataFragment extends Fragment {
 
 
             entriesList.add(new ArrayList<Entry>());
-            LineDataSet lineDataSet = new LineDataSet(entriesList.get(i), "");
+            List<Entry> entryValues = entriesList.get(i);
+            LineDataSet lineDataSet = new LineDataSet(entryValues, "");
             lineDataSet.setDrawCircles(false);
             lineDataSet.setDrawCubic(true);
             lineDataSet.setValueFormatter(new ValueFormatter() {
@@ -253,6 +263,7 @@ public class RawDataFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+
         super.onDestroy();
         getActivity().unregisterReceiver(rawDataBroadcastReceiver);
     }
@@ -260,26 +271,35 @@ public class RawDataFragment extends Fragment {
     class RawDataBroadcastReceiver extends BroadcastReceiver {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public synchronized void onReceive(Context context, Intent intent) {
             Value value = intent.getExtras().getParcelable(MainActivity.EXTRA_VALUES);
+
             if (value != null) {
                 xValuesList.add("");
-                for (int i = 0; i < charts.size(); i++) {
-                    LineChart chart = charts.get(i);
-                    List<Entry> entries = entriesList.get(i);
+                values.add(value);
 
+                if ((values.size() % 125) == 0) {
+                    for (int i = 0; i < charts.size(); i++) {
 
-                    int xCount = xValuesList.size() - 1;
-                    entries.add(new Entry(value.toFloatArray()[i], xCount));
-
-                    if ((xValuesList.size() % 50) == 0) {
+                        LineChart chart = charts.get(i);
+                        List<Entry> entries = entriesList.get(i);
+                        entries.clear();
+                        for (int j = 0; j < values.size(); j++) {
+                            entries.add(new Entry(values.get(j).toFloatArray()[i], j));
+                        }
                         chart.setVisibleXRange(timeZoom.getZoomValue());
-                        chart.moveViewToX(xCount - 1);
+                        chart.moveViewToX(values.size() - timeZoom.getZoomValue());
 
                         chart.notifyDataSetChanged();
                         chart.invalidate();
                     }
+
                 }
+            }
+
+            if (value != null) {
+                Log.d("OrderNumber", String.valueOf(value.getHardwareOrderNumber()));
+                xValuesList.add("");
             }
         }
     }

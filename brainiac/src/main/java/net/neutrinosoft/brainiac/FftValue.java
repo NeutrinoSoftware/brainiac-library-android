@@ -3,7 +3,10 @@ package net.neutrinosoft.brainiac;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class FftValue implements Parcelable{
+/**
+ * FftValue  class which represents transformed values.
+ */
+public class FftValue implements Parcelable {
     private int data1;
     private int data2;
     private int data3;
@@ -65,6 +68,7 @@ public class FftValue implements Parcelable{
         parcel.writeInt(data2);
         parcel.writeInt(data3);
     }
+
     public static FftValue[] createFromParcelableArray(Parcelable[] parcelables) {
 
         FftValue[] values = new FftValue[parcelables.length];

@@ -3,6 +3,7 @@ package net.neutrinosoft.brainactivity.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.view.ViewPager;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -31,7 +32,6 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         MainActivityPagerAdapter adapter = new MainActivityPagerAdapter(getSupportFragmentManager());
 
         viewPager.setOffscreenPageLimit(2);

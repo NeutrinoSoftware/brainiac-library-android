@@ -3,17 +3,25 @@ package net.neutrinosoft.brainiac;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class   Value implements Parcelable {
+/**
+ * Value class which represents raw values received from Braniac accessory.
+ */
+public class Value implements Parcelable {
     private double channel1;
     private double channel2;
     private double channel3;
     private double channel4;
+    private int hardwareOrderNumber;
 
     public Value(Parcel in) {
         channel1 = in.readDouble();
         channel2 = in.readDouble();
         channel3 = in.readDouble();
         channel4 = in.readDouble();
+    }
+
+    public int getHardwareOrderNumber() {
+        return hardwareOrderNumber;
     }
 
     public static final Creator<Value> CREATOR = new Creator<Value>() {
@@ -87,4 +95,7 @@ public class   Value implements Parcelable {
     }
 
 
+    public void setHardwareOrderNumber(int hardwareOrderNumber) {
+        this.hardwareOrderNumber = hardwareOrderNumber;
+    }
 }
