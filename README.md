@@ -80,19 +80,110 @@ FftValue - class which represents transformed values. It contains a few fields:
 ##OnConnectCallback
 OnConnectCallback is used for handling connection state.
 
-1. onConnectSuccess - callback is called after successful connection to Brainiac accessory.
-2. onConnectFailed - callback is called after failed connection to Brainiac accessory.
+###onConnectSuccess
+Callback is called after successful connection to Brainiac accessory.
+
+```java
+void onConnectSuccess()
+```
+
+###onConnectFailed
+Callback is called after failed connection to Brainiac accessory.
+
+```java
+void onConnectFailed()
+```
 
 ##OnReceiveDataCallback
-OnReceiveDataCallback is used for handling a new banch of raw data.
+OnReceiveDataCallback is used for handling a new bundle of raw data.
 
-1.  void onReceiveData(Value value) - value contains raw data of every channel
+###onReceiveData
+Callback is called once raw data received.
+
+```java
+void onReceiveData(Value value)
+```
+*Parameter*
+
+* **value** - contains raw data of every channel
 
 ##OnReceiveFftDataCallback
 OnReceiveFftDataCallback is used for handling dominant frequencies.
-1.  void onReceiveData(FftValue[] fftValues) - fft is array of 4 FftValue instances which represent dominant frequencies for every channel
+
+###onReceiveData
+Callback is called once transformed data received.
+
+```java
+void onReceiveData(FftValue[] fftValues)
+```
+*Parameter*
+
+* **fftValues** - is array of 4 FftValue instances which represent dominant frequencies for every channel
+
 
 ##BrainiacManager
-BrainiacManager - 
+The BrainiacManager class handles connections and data transfer between Braniac (alpha title) accessory and Android device.
+
+###setOnReceiveFftDataCallback
+Register a callback to be invoked when fft data received.
+
+```java
+public void setOnReceiveFftDataCallback(OnReceiveFftDataCallback onReceiveFftDataCallback)
+```
+*Parameter*
+
+* **onReceiveFftDataCallback** - An implementation of OnReceiveFftDataCallback
+
+###getBrainiacManager
+Returns BrainiacManager singleton. 
+
+```java
+public static BrainiacManager getBrainiacManager(Context context)
+```
+*Parameter*
+
+* **context** - application context
+
+###setOnReceiveDataCallback
+Register a callback to be invoked when raw data received.
+
+```java
+public void setOnReceiveDataCallback(OnReceiveDataCallback onReceiveDataCallback)
+```
+*Parameter*
+
+* **onReceiveDataCallback** - An implementation of OnReceiveDataCallback
+
+###startScan
+Starts a scan for Brainiac devices.
+
+```java
+public void startScan(final OnConnectCallback onConnectCallback)
+```
+*Parameter*
+
+* **onConnectCallback** - These callbacks may get called at any time, when connected to a brainiac device.
+
+###isConnected
+Indicates whether BrainiacManager connected to device. Return true if instance connected to device, false otherwise
+
+```java
+public boolean isConnected()
+```
+
+###stopScan
+Stops an ongoing Bluetooth LE device scan.
+
+```java
+public void stopScan()
+```
+
+###release
+Release all using resources
+
+```java
+public void release()
+```
+
 
 
