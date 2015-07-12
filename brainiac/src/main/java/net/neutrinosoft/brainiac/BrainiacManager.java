@@ -26,6 +26,7 @@ import org.jtransforms.fft.DoubleFFT_1D;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -267,6 +268,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
 
         short orderNumber = BitUtils.getShortFromLittleBytes(data[0], data[1]);
         firstValue.setHardwareOrderNumber(orderNumber);
+        firstValue.setTimeframe(new Date().getTime());
         firstValue.setChannel1(Math.floor(K * BitUtils.getShortFromBigBytes(data[3], data[4])));
         firstValue.setChannel2(Math.floor(K * BitUtils.getShortFromBigBytes(data[5], data[6])));
         firstValue.setChannel3(Math.floor(K * BitUtils.getShortFromBigBytes(data[7], data[8])));
@@ -276,6 +278,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
 
         Value secondValue = new Value();
         secondValue.setHardwareOrderNumber(orderNumber + 1);
+        secondValue.setTimeframe(new Date().getTime());
         secondValue.setChannel1(Math.floor(K * BitUtils.getShortFromBigBytes(data[12], data[13])));
         secondValue.setChannel2(Math.floor(K * BitUtils.getShortFromBigBytes(data[14], data[15])));
         secondValue.setChannel3(Math.floor(K * BitUtils.getShortFromBigBytes(data[16], data[17])));

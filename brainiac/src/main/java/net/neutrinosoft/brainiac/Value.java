@@ -11,13 +11,34 @@ public class Value implements Parcelable {
     private double channel2;
     private double channel3;
     private double channel4;
+    private long counter;
+    private long timeframe;
     private int hardwareOrderNumber;
+
+    public long getCounter() {
+        return counter;
+    }
+
+    public void setCounter(long counter) {
+        this.counter = counter;
+    }
+
+    public long getTimeframe() {
+        return timeframe;
+    }
+
+    public void setTimeframe(long timeframe) {
+        this.timeframe = timeframe;
+    }
 
     public Value(Parcel in) {
         channel1 = in.readDouble();
         channel2 = in.readDouble();
         channel3 = in.readDouble();
         channel4 = in.readDouble();
+        hardwareOrderNumber = in.readInt();
+        timeframe = in.readLong();
+        counter = in.readLong();
     }
 
     public int getHardwareOrderNumber() {
@@ -92,6 +113,9 @@ public class Value implements Parcelable {
         parcel.writeDouble(channel2);
         parcel.writeDouble(channel3);
         parcel.writeDouble(channel4);
+        parcel.writeInt(hardwareOrderNumber);
+        parcel.writeLong(timeframe);
+        parcel.writeLong(counter);
     }
 
 

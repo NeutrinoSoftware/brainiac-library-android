@@ -69,6 +69,9 @@ Value - class which represents raw values received from Braniac accessory. It co
 2. channel2 - brain activity measure for channel 2 (O1) - double
 3. channel3 - brain activity measure for channel 3 (T4) - double
 4. channel4 - brain activity measure for channel 4 (O2) - double
+5. timeframe - number of milliseconds passed from 1970 year for each packet
+6. counter - serial internal order number identifying number of data packet
+7. hardwareOrderNumber - hardware order number identifying number of data packet 
 
 ##FftValue
 FftValue - class which represents transformed values. It contains a few fields:
