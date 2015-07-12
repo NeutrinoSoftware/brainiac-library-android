@@ -43,6 +43,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
 
 
     private static ArrayList<Value> values = new ArrayList<>();
+    private static ArrayList<FftValue[]> fftValues = new ArrayList<>();
     private Context context;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothDevice bluetoothDevice;
@@ -105,12 +106,20 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
 
         }
 
+        long timeframe = new Date().getTime();
+
         FftValue[] fftValues = new FftValue[4];
         fftValues[0] = fft(fftArray1);
         fftValues[1] = fft(fftArray2);
         fftValues[2] = fft(fftArray3);
         fftValues[3] = fft(fftArray4);
 
+        for (FftValue fftValue : fftValues){
+            fftValue.setTimeframe(timeframe);
+            fftValue.setCounter(BrainiacManager.fftValues.size());
+        }
+
+        BrainiacManager.fftValues.add(fftValues);
 
         return fftValues;
     }
@@ -142,7 +151,6 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         }
 
         FftValue fftValue = new FftValue();
-
         fftValue.setData1(maxIndex(output, 3, 4));
         fftValue.setData2(maxIndex(output, 7, 7));
         fftValue.setData3(maxIndex(output, 14, 11));

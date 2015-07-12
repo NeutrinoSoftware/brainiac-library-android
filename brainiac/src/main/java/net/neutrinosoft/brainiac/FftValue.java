@@ -10,6 +10,24 @@ public class FftValue implements Parcelable {
     private int data1;
     private int data2;
     private int data3;
+    private long timeframe;
+    private long counter;
+
+    public void setTimeframe(long timeframe) {
+        this.timeframe = timeframe;
+    }
+
+    public void setCounter(long counter) {
+        this.counter = counter;
+    }
+
+    public long getTimeframe() {
+        return timeframe;
+    }
+
+    public long getCounter() {
+        return counter;
+    }
 
     public FftValue() {
     }
@@ -18,6 +36,8 @@ public class FftValue implements Parcelable {
         data1 = in.readInt();
         data2 = in.readInt();
         data3 = in.readInt();
+        timeframe = in.readLong();
+        counter = in.readLong();
     }
 
     public static final Creator<FftValue> CREATOR = new Creator<FftValue>() {
@@ -67,6 +87,8 @@ public class FftValue implements Parcelable {
         parcel.writeInt(data1);
         parcel.writeInt(data2);
         parcel.writeInt(data3);
+        parcel.writeLong(timeframe);
+        parcel.writeLong(counter);
     }
 
     public static FftValue[] createFromParcelableArray(Parcelable[] parcelables) {

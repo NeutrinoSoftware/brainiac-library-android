@@ -79,6 +79,8 @@ FftValue - class which represents transformed values. It contains a few fields:
 1. data1 - dominant frequency value for current time range and frequencies range 3-7 Hz - int
 2. data2 - dominant frequency value for current time range and frequencies range 7-13 Hz - int
 3. data3 - dominant frequency value for current time range and frequencies range 14-24 Hz - int
+4. timeframe - number of milliseconds passed from 1970 year for each packet 
+5. counter - serial internal order number identifying number of data packet
 
 ##OnConnectCallback
 OnConnectCallback is used for handling connection state.

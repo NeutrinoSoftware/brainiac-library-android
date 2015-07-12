@@ -8,10 +8,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1ef08603-8487-4a86-8e13-467e74c08a44" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java" afterPath="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/Value.java" afterPath="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/Value.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/FftValue.java" afterPath="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/FftValue.java" />
     </list>
     <ignored path="brainiac-library-android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -48,25 +45,15 @@
         <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/FftValue.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
+              <caret line="15" column="46" selection-start-line="15" selection-start-column="46" selection-end-line="15" selection-end-column="46" />
               <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#585#586#0" expanded="false" />
-                <element signature="e#632#633#0" expanded="false" />
-                <element signature="e#698#699#0" expanded="false" />
-                <element signature="e#747#748#0" expanded="false" />
-                <element signature="e#783#784#0" expanded="false" />
-                <element signature="e#811#812#0" expanded="false" />
-                <element signature="e#850#851#0" expanded="false" />
-                <element signature="e#884#885#0" expanded="false" />
-                <element signature="e#913#914#0" expanded="false" />
-                <element signature="e#941#942#0" expanded="false" />
-                <element signature="e#980#981#0" expanded="false" />
-                <element signature="e#1014#1015#0" expanded="false" />
-                <element signature="e#1111#1112#0" expanded="false" />
-                <element signature="e#1145#1146#0" expanded="false" />
-                <element signature="e#1196#1197#0" expanded="false" />
-                <element signature="e#1220#1221#0" expanded="false" />
+                <element signature="e#414#415#0" expanded="true" />
+                <element signature="e#458#459#0" expanded="true" />
+                <element signature="e#496#497#0" expanded="true" />
+                <element signature="e#530#531#0" expanded="true" />
+                <element signature="e#562#563#0" expanded="true" />
+                <element signature="e#594#595#0" expanded="true" />
+                <element signature="e#624#625#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -102,11 +89,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BrainiacManager.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="BrainiacManager.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="283" column="78" selection-start-line="283" selection-start-column="78" selection-end-line="283" selection-end-column="78" />
+            <state vertical-scroll-proportion="0.5334052">
+              <caret line="101" column="25" selection-start-line="101" selection-start-column="25" selection-end-line="101" selection-end-column="25" />
               <folding />
             </state>
           </provider>
@@ -117,15 +104,17 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-              <folding />
+              <folding>
+                <element signature="imports" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Value.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Value.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/Value.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2262931">
+            <state vertical-scroll-proportion="0.0">
               <caret line="15" column="35" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="35" />
               <folding>
                 <element signature="e#457#458#0" expanded="true" />
@@ -2290,10 +2279,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/FftValue.java" />
         <option value="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/callback/OnReceiveFftDataCallback.java" />
-        <option value="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java" />
         <option value="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/Value.java" />
+        <option value="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/FftValue.java" />
+        <option value="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java" />
       </list>
     </option>
   </component>
@@ -2671,23 +2660,13 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
           <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#585#586#0" expanded="false" />
-            <element signature="e#632#633#0" expanded="false" />
-            <element signature="e#698#699#0" expanded="false" />
-            <element signature="e#747#748#0" expanded="false" />
-            <element signature="e#783#784#0" expanded="false" />
-            <element signature="e#811#812#0" expanded="false" />
-            <element signature="e#850#851#0" expanded="false" />
-            <element signature="e#884#885#0" expanded="false" />
-            <element signature="e#913#914#0" expanded="false" />
-            <element signature="e#941#942#0" expanded="false" />
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1014#1015#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1145#1146#0" expanded="false" />
-            <element signature="e#1196#1197#0" expanded="false" />
-            <element signature="e#1220#1221#0" expanded="false" />
+            <element signature="e#414#415#0" expanded="true" />
+            <element signature="e#458#459#0" expanded="true" />
+            <element signature="e#496#497#0" expanded="true" />
+            <element signature="e#530#531#0" expanded="true" />
+            <element signature="e#562#563#0" expanded="true" />
+            <element signature="e#594#595#0" expanded="true" />
+            <element signature="e#624#625#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2728,7 +2707,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2763,32 +2744,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/FftValue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="false" />
-            <element signature="e#585#586#0" expanded="false" />
-            <element signature="e#632#633#0" expanded="false" />
-            <element signature="e#698#699#0" expanded="false" />
-            <element signature="e#747#748#0" expanded="false" />
-            <element signature="e#783#784#0" expanded="false" />
-            <element signature="e#811#812#0" expanded="false" />
-            <element signature="e#850#851#0" expanded="false" />
-            <element signature="e#884#885#0" expanded="false" />
-            <element signature="e#913#914#0" expanded="false" />
-            <element signature="e#941#942#0" expanded="false" />
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1014#1015#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1145#1146#0" expanded="false" />
-            <element signature="e#1196#1197#0" expanded="false" />
-            <element signature="e#1220#1221#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -2809,17 +2766,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="283" column="78" selection-start-line="283" selection-start-column="78" selection-end-line="283" selection-end-column="78" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/Value.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2262931">
+        <state vertical-scroll-proportion="0.0">
           <caret line="15" column="35" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="35" />
           <folding>
             <element signature="e#457#458#0" expanded="true" />
@@ -2833,6 +2782,30 @@
             <element signature="e#1061#1062#0" expanded="true" />
             <element signature="e#1103#1104#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/FftValue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="46" selection-start-line="15" selection-start-column="46" selection-end-line="15" selection-end-column="46" />
+          <folding>
+            <element signature="e#414#415#0" expanded="true" />
+            <element signature="e#458#459#0" expanded="true" />
+            <element signature="e#496#497#0" expanded="true" />
+            <element signature="e#530#531#0" expanded="true" />
+            <element signature="e#562#563#0" expanded="true" />
+            <element signature="e#594#595#0" expanded="true" />
+            <element signature="e#624#625#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5334052">
+          <caret line="101" column="25" selection-start-line="101" selection-start-column="25" selection-end-line="101" selection-end-column="25" />
+          <folding />
         </state>
       </provider>
     </entry>
