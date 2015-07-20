@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
+
 import net.neutrinosoft.brainactivity.R;
 import net.neutrinosoft.brainiac.BrainiacManager;
 import net.neutrinosoft.brainiac.FftValue;
@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
+import io.fabric.sdk.android.Fabric;
 
 public class StartUpActivity extends BaseActivity {
 
@@ -31,6 +32,16 @@ public class StartUpActivity extends BaseActivity {
     TextView statusLabel;
     @InjectView(R.id.connectBtn)
     Button connectBtn;
+    @InjectView(R.id.plusFrequency)
+    Button plusFrequency;
+    @InjectView(R.id.minusFrequency)
+    Button minusFrequency;
+    @InjectView(R.id.frequency)
+    TextView frequencyLabel;
+    @InjectView(R.id.startTest)
+    Button startTest;
+
+    private int frequency = 3;
 
     public static final int REQUEST_ENABLE_BT = 1;
     public static final String ACTION_NEW_VALUE = "ACTION_NEW_VALUE";
@@ -43,6 +54,7 @@ public class StartUpActivity extends BaseActivity {
         public void onConnectSuccess() {
             connectBtn.setText(R.string.disconnect);
             statusLabel.setText("Connected");
+
         }
 
         @Override
@@ -105,8 +117,10 @@ public class StartUpActivity extends BaseActivity {
 
     @OnClick(R.id.connectBtn)
     void onConnectToDeviceClick() {
+        startTest.setText(R.string.start_test);
+        brainiacManager.stopTest();
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter.isEnabled()) {
+        if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
             if (bluetoothAdapter.isDiscovering()) {
                 brainiacManager.stopScan();
                 connectBtn.setText(R.string.connect_to_device);
@@ -124,6 +138,39 @@ public class StartUpActivity extends BaseActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
+    }
+
+
+    @OnClick(R.id.minusFrequency)
+    public void onMinusFrequencyClick() {
+        if (frequency == 4) {
+            minusFrequency.setEnabled(false);
+        } else if (frequency == 24) {
+            plusFrequency.setEnabled(true);
+        }
+        frequencyLabel.setText(String.valueOf(--frequency));
+    }
+
+    @OnClick(R.id.plusFrequency)
+    public void onPlusFrequencyClick() {
+        if (frequency == 23) {
+            plusFrequency.setEnabled(false);
+        } else if (frequency == 3) {
+            minusFrequency.setEnabled(true);
+        }
+        frequencyLabel.setText(String.valueOf(++frequency));
+    }
+
+    @OnClick(R.id.startTest)
+    public void onStartTestClick(Button button) {
+        if (brainiacManager.isInTestMode()) {
+            button.setText(R.string.start_test);
+            brainiacManager.stopTest();
+        } else {
+            button.setText(R.string.stop);
+            brainiacManager.startTest(frequency);
+        }
+
     }
 
 

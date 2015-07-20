@@ -16,6 +16,7 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
 
 import net.neutrinosoft.brainiac.callback.OnConnectCallback;
@@ -50,7 +51,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     private BluetoothGatt bluetoothGatt;
     private OnReceiveFftDataCallback onReceiveFftDataCallback;
     private OnConnectCallback onConnectCallback;
-
+    private boolean isTestMode;
 
     private OnReceiveDataCallback onReceiveDataCallback;
     private int lastGreenValue = 0;
@@ -66,7 +67,8 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     private final static double RED_2_FLAG = 0.3;
     private final static double RED_1_DIFF_HIGH = RED_1_FLAG / (TIMESPAN / STEP);
     private final static double RED_2_DIFF_HIGH = RED_2_FLAG / (TIMESPAN / STEP);
-
+    private Handler handler;
+    private Runnable testCallback;
 
 
     /**
@@ -182,6 +184,8 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void startScan(final OnConnectCallback onConnectCallback) {
         this.onConnectCallback = onConnectCallback;
+        values.clear();
+        fftValues.clear();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             bluetoothAdapter.startLeScan(this);
         } else {
@@ -215,12 +219,21 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
 
 
     /**
-         * Indicates whether BrainiacManager connected to device.
+     * Indicates whether BrainiacManager connected to device.
      *
      * @return true if instance connected to device, false otherwise
      */
     public boolean isConnected() {
         return bluetoothDevice != null;
+    }
+
+    /**
+     * Indicates whether BrainiacManager launched in test mode.
+     *
+     * @return true if instance is in test mode , false otherwise
+     */
+    public boolean isInTestMode() {
+        return isTestMode;
     }
 
 
@@ -503,7 +516,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
             int val2upper = redsUpper.get(STEP - 1);
 
             if (val2 < val1) {
-                boolean mainCondition = (val1 - val2) > RED_1_DIFF_HIGH;
+                boolean mainCondition = (val1 - val2) > RED_2_DIFF_HIGH;
                 boolean lowCondition = val2lower < val1lower && (val1lower - val2lower) > (0.15 / (TIMESPAN / STEP));
                 boolean highCondition = val2upper > val1upper && (val2upper - val1upper) > (0.15 / (TIMESPAN / STEP));
 
@@ -544,4 +557,41 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         values.clear();
     }
 
+    public void startTest(final int frequency) {
+        isTestMode = true;
+        handler = new Handler();
+        testCallback = new Runnable() {
+            @Override
+            public void run() {
+                short orderNumber = (short) values.size();
+
+                double d = 100000 * Math.sin(2 * Math.PI * frequency * orderNumber / 250);
+                Value value = new Value();
+                value.setCounter(orderNumber);
+                value.setTimeframe(new Date().getTime());
+                value.setChannel1(d);
+                value.setChannel2(d);
+                value.setChannel3(d);
+                value.setChannel4(d);
+
+                values.add(value);
+                if (onReceiveDataCallback != null) {
+                    onReceiveDataCallback.onReceiveData(value);
+                }
+                if (onReceiveFftDataCallback != null && (BrainiacManager.values.size() % 256) == 0) {
+                    onReceiveFftDataCallback.onReceiveData(getFftData());
+                }
+                handler.postDelayed(this, 4);
+            }
+        };
+        handler.postDelayed(testCallback, 4);
+
+    }
+
+    public void stopTest() {
+        if (isTestMode) {
+            isTestMode = false;
+            handler.removeCallbacks(testCallback);
+        }
+    }
 }

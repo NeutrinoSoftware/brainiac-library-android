@@ -6,13 +6,15 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="No Filters" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1ef08603-8487-4a86-8e13-467e74c08a44" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java" afterPath="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/net/neutrinosoft/brainactivity/fragments/IndicatorsFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/net/neutrinosoft/brainactivity/fragments/IndicatorsFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_indicators.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_indicators.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/net/neutrinosoft/brainactivity/activities/StartUpActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/net/neutrinosoft/brainactivity/activities/StartUpActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_startup.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_startup.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="brainiac-library-android.iws" />
@@ -84,28 +86,65 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BitUtils.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BitUtils.java">
+      <file leaf-file-name="BrainiacManager.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.88685346">
+              <caret line="593" column="50" selection-start-line="593" selection-start-column="50" selection-end-line="593" selection-end-column="50" />
               <folding>
-                <element signature="imports" expanded="false" />
+                <element signature="e#8041#8042#0" expanded="true" />
+                <element signature="e#8087#8088#0" expanded="true" />
+                <element signature="e#8277#8278#0" expanded="true" />
+                <element signature="e#8310#8311#0" expanded="true" />
+                <element signature="e#20873#21829#0" expanded="true" />
+                <element signature="e#21828#21829#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BrainiacManager.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java">
+      <file leaf-file-name="StartUpActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/net/neutrinosoft/brainactivity/activities/StartUpActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7898707">
-              <caret line="370" column="42" selection-start-line="370" selection-start-column="19" selection-end-line="370" selection-end-column="42" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="120" column="31" selection-start-line="120" selection-start-column="31" selection-end-line="120" selection-end-column="31" />
               <folding>
-                <element signature="e#7873#7874#0" expanded="true" />
-                <element signature="e#7919#7920#0" expanded="true" />
+                <element signature="e#1682#1701#0" expanded="true" />
+                <element signature="e#2015#2041#0" expanded="true" />
+                <element signature="e#2084#2109#0" expanded="true" />
+                <element signature="e#3665#3708#0" expanded="true" />
+                <element signature="e#3827#3828#0" expanded="true" />
+                <element signature="e#3889#3890#0" expanded="true" />
+                <element signature="e#3984#4003#0" expanded="true" />
+                <element signature="e#4327#4353#0" expanded="true" />
+                <element signature="e#4392#4414#0" expanded="true" />
+                <element signature="e#4551#4577#0" expanded="true" />
+                <element signature="e#4616#4638#0" expanded="true" />
+                <element signature="e#4760#4785#0" expanded="true" />
+                <element signature="e#4823#4836#0" expanded="true" />
+                <element signature="e#5821#5840#0" expanded="true" />
+                <element signature="e#5927#5940#0" expanded="true" />
               </folding>
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="activity_startup.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_startup.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.310345">
+              <caret line="26" column="12" selection-start-line="26" selection-start-column="12" selection-end-line="26" selection-end-column="12" />
+              <folding>
+                <element signature="e#631#658#0" expanded="true" />
+                <element signature="e#1121#1141#0" expanded="true" />
+                <element signature="e#2170#2193#0" expanded="true" />
+                <element signature="e#2816#2845#0" expanded="true" />
+                <element signature="e#3138#3157#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+          <provider editor-type-id="android-designer">
+            <state />
           </provider>
         </entry>
       </file>
@@ -115,8 +154,21 @@
             <state vertical-scroll-proportion="0.0">
               <caret line="81" column="22" selection-start-line="81" selection-start-column="22" selection-end-line="81" selection-end-column="22" />
               <folding>
-                <element signature="e#2578#2579#0" expanded="true" />
-                <element signature="e#2618#2619#0" expanded="true" />
+                <element signature="e#0#45544#0" expanded="false" />
+                <element signature="e#2809#2810#0" expanded="false" />
+                <element signature="e#2849#2850#0" expanded="false" />
+                <element signature="e#17814#17815#0" expanded="false" />
+                <element signature="e#17854#17855#0" expanded="false" />
+                <element signature="e#18011#18012#0" expanded="false" />
+                <element signature="e#18051#18052#0" expanded="false" />
+                <element signature="e#19935#19936#0" expanded="false" />
+                <element signature="e#19975#19976#0" expanded="false" />
+                <element signature="e#20132#20133#0" expanded="false" />
+                <element signature="e#20172#20173#0" expanded="false" />
+                <element signature="e#30875#30876#0" expanded="false" />
+                <element signature="e#30916#30917#0" expanded="false" />
+                <element signature="e#31527#31528#0" expanded="false" />
+                <element signature="e#31568#31569#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -142,18 +194,6 @@
           </provider>
           <provider editor-type-id="android-designer">
             <state />
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/net/neutrinosoft/brainactivity/activities/MainActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-              <folding>
-                <element signature="imports" expanded="false" />
-              </folding>
-            </state>
           </provider>
         </entry>
       </file>
@@ -2353,6 +2393,8 @@
         <option value="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/FftValue.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_indicators.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/net/neutrinosoft/brainactivity/fragments/IndicatorsFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_startup.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/net/neutrinosoft/brainactivity/activities/StartUpActivity.java" />
         <option value="$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java" />
       </list>
     </option>
@@ -2400,6 +2442,56 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="brainiac-library-android" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="brainiac-library-android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="brainiac-library-android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="brainactivity" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="brainiac-library-android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="brainactivity" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activities" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -2627,7 +2719,7 @@
       <option name="DEPLOY" value="true" />
       <option name="ARTIFACT_NAME" value="" />
       <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="true" />
       <option name="PREFERRED_AVD" value="" />
       <option name="USE_COMMAND_LINE" value="true" />
       <option name="COMMAND_LINE" value="" />
@@ -2689,8 +2781,9 @@
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32967034" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294979" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39958158" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -2709,7 +2802,6 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -2726,7 +2818,9 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
@@ -2777,8 +2871,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7873#7874#0" expanded="true" />
-            <element signature="e#7919#7920#0" expanded="true" />
+            <element signature="e#8041#8042#0" expanded="true" />
+            <element signature="e#8087#8088#0" expanded="true" />
+            <element signature="e#8277#8278#0" expanded="true" />
+            <element signature="e#8310#8311#0" expanded="true" />
+            <element signature="e#20873#21829#0" expanded="true" />
+            <element signature="e#21828#21829#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2882,8 +2980,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7873#7874#0" expanded="true" />
-            <element signature="e#7919#7920#0" expanded="true" />
+            <element signature="e#8041#8042#0" expanded="true" />
+            <element signature="e#8087#8088#0" expanded="true" />
+            <element signature="e#8277#8278#0" expanded="true" />
+            <element signature="e#8310#8311#0" expanded="true" />
+            <element signature="e#20873#21829#0" expanded="true" />
+            <element signature="e#21828#21829#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2987,8 +3089,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7873#7874#0" expanded="true" />
-            <element signature="e#7919#7920#0" expanded="true" />
+            <element signature="e#8041#8042#0" expanded="true" />
+            <element signature="e#8087#8088#0" expanded="true" />
+            <element signature="e#8277#8278#0" expanded="true" />
+            <element signature="e#8310#8311#0" expanded="true" />
+            <element signature="e#20873#21829#0" expanded="true" />
+            <element signature="e#21828#21829#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3092,8 +3198,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7873#7874#0" expanded="true" />
-            <element signature="e#7919#7920#0" expanded="true" />
+            <element signature="e#8041#8042#0" expanded="true" />
+            <element signature="e#8087#8088#0" expanded="true" />
+            <element signature="e#8277#8278#0" expanded="true" />
+            <element signature="e#8310#8311#0" expanded="true" />
+            <element signature="e#20873#21829#0" expanded="true" />
+            <element signature="e#21828#21829#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3197,8 +3307,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="268" column="29" selection-start-line="268" selection-start-column="29" selection-end-line="268" selection-end-column="29" />
           <folding>
-            <element signature="e#7873#7874#0" expanded="true" />
-            <element signature="e#7919#7920#0" expanded="true" />
+            <element signature="e#8041#8042#0" expanded="true" />
+            <element signature="e#8087#8088#0" expanded="true" />
+            <element signature="e#8277#8278#0" expanded="true" />
+            <element signature="e#8310#8311#0" expanded="true" />
+            <element signature="e#20873#21829#0" expanded="true" />
+            <element signature="e#21828#21829#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3373,19 +3487,77 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="81" column="22" selection-start-line="81" selection-start-column="22" selection-end-line="81" selection-end-column="22" />
           <folding>
-            <element signature="e#2578#2579#0" expanded="true" />
-            <element signature="e#2618#2619#0" expanded="true" />
+            <element signature="e#0#45544#0" expanded="false" />
+            <element signature="e#2809#2810#0" expanded="false" />
+            <element signature="e#2849#2850#0" expanded="false" />
+            <element signature="e#17814#17815#0" expanded="false" />
+            <element signature="e#17854#17855#0" expanded="false" />
+            <element signature="e#18011#18012#0" expanded="false" />
+            <element signature="e#18051#18052#0" expanded="false" />
+            <element signature="e#19935#19936#0" expanded="false" />
+            <element signature="e#19975#19976#0" expanded="false" />
+            <element signature="e#20132#20133#0" expanded="false" />
+            <element signature="e#20172#20173#0" expanded="false" />
+            <element signature="e#30875#30876#0" expanded="false" />
+            <element signature="e#30916#30917#0" expanded="false" />
+            <element signature="e#31527#31528#0" expanded="false" />
+            <element signature="e#31568#31569#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_startup.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.310345">
+          <caret line="26" column="12" selection-start-line="26" selection-start-column="12" selection-end-line="26" selection-end-column="12" />
+          <folding>
+            <element signature="e#631#658#0" expanded="true" />
+            <element signature="e#1121#1141#0" expanded="true" />
+            <element signature="e#2170#2193#0" expanded="true" />
+            <element signature="e#2816#2845#0" expanded="true" />
+            <element signature="e#3138#3157#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/net/neutrinosoft/brainactivity/activities/StartUpActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="120" column="31" selection-start-line="120" selection-start-column="31" selection-end-line="120" selection-end-column="31" />
+          <folding>
+            <element signature="e#1682#1701#0" expanded="true" />
+            <element signature="e#2015#2041#0" expanded="true" />
+            <element signature="e#2084#2109#0" expanded="true" />
+            <element signature="e#3665#3708#0" expanded="true" />
+            <element signature="e#3827#3828#0" expanded="true" />
+            <element signature="e#3889#3890#0" expanded="true" />
+            <element signature="e#3984#4003#0" expanded="true" />
+            <element signature="e#4327#4353#0" expanded="true" />
+            <element signature="e#4392#4414#0" expanded="true" />
+            <element signature="e#4551#4577#0" expanded="true" />
+            <element signature="e#4616#4638#0" expanded="true" />
+            <element signature="e#4760#4785#0" expanded="true" />
+            <element signature="e#4823#4836#0" expanded="true" />
+            <element signature="e#5821#5840#0" expanded="true" />
+            <element signature="e#5927#5940#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/brainiac/src/main/java/net/neutrinosoft/brainiac/BrainiacManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7898707">
-          <caret line="370" column="42" selection-start-line="370" selection-start-column="19" selection-end-line="370" selection-end-column="42" />
+        <state vertical-scroll-proportion="0.88685346">
+          <caret line="593" column="50" selection-start-line="593" selection-start-column="50" selection-end-line="593" selection-end-column="50" />
           <folding>
-            <element signature="e#7873#7874#0" expanded="true" />
-            <element signature="e#7919#7920#0" expanded="true" />
+            <element signature="e#8041#8042#0" expanded="true" />
+            <element signature="e#8087#8088#0" expanded="true" />
+            <element signature="e#8277#8278#0" expanded="true" />
+            <element signature="e#8310#8311#0" expanded="true" />
+            <element signature="e#20873#21829#0" expanded="true" />
+            <element signature="e#21828#21829#0" expanded="true" />
           </folding>
         </state>
       </provider>

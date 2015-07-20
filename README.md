@@ -176,6 +176,13 @@ Indicates whether BrainiacManager connected to device. Return true if instance c
 public boolean isConnected()
 ```
 
+###isInTestMode
+Indicates whether BrainiacManager launched in test mode. Returns true if instance is in test mode, false otherwise
+
+```java
+public boolean isInTestMode()
+```
+
 ###stopScan
 Stops an ongoing Bluetooth LE device scan.
 
