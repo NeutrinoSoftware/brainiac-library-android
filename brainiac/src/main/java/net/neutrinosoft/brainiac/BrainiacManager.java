@@ -53,6 +53,21 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
 
 
     private OnReceiveDataCallback onReceiveDataCallback;
+    private int lastGreenValue = 0;
+    private double lastGreenAverage = 0;
+    private final static int STEP = 10;
+    private final static int TIMESPAN = 180;
+    private final static double YELLOW_FLAG_LOW = 0.2;
+    private final static double YELLOW_FLAG_HIGH = 0.3;
+    private final static double YELLOW_DIFF_LOW = YELLOW_FLAG_LOW / (TIMESPAN / STEP);
+    private final static double YELLOW_DIFF_HIGH = YELLOW_FLAG_HIGH / (TIMESPAN / STEP);
+
+    private final static double RED_1_FLAG = 0.2;
+    private final static double RED_2_FLAG = 0.3;
+    private final static double RED_1_DIFF_HIGH = RED_1_FLAG / (TIMESPAN / STEP);
+    private final static double RED_2_DIFF_HIGH = RED_2_FLAG / (TIMESPAN / STEP);
+
+
 
     /**
      * Register a callback to be invoked when fft data received.
@@ -300,6 +315,221 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
             onReceiveFftDataCallback.onReceiveData(getFftData());
         }
 
+    }
+
+    /**
+     * Returns flag which define the state of examined man detecting if the state of brain activity is full and active.
+     * Defined as: When closing the eyes or with simple contemplation of neutral images dominant frequency in the range of alpha (7-13 Hz)
+     * has no oscillations more than 20% for 3 minutes during the registration process.
+     *
+     * @param channel Number for processing channel (1-4)
+     * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
+     */
+
+    public boolean processGreenChannel(int channel) {
+        int length = BrainiacManager.fftValues.size();
+        ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
+
+        ArrayList<Integer> greens = new ArrayList<>();
+
+        for (int i = lastGreenValue; i < length; i++) {
+            FftValue[] fftValues = fft.get(i);
+            greens.add(fftValues[channel].getData2());
+        }
+
+
+        int average = average(greens);
+
+        for (int i = 0; i < (length - lastGreenValue); i++) {
+            int value = greens.get(i);
+            if (Math.abs((lastGreenValue - value)) > (lastGreenValue * 0.2)) {
+                lastGreenAverage = (lastGreenAverage + average) / 2.0;
+                lastGreenValue = length;
+                return false;
+
+            }
+        }
+
+        lastGreenAverage = (lastGreenAverage + average) / 2.0;
+        lastGreenValue = length;
+
+        return true;
+
+    }
+
+
+    /**
+     * Returns flag which define the state of examined man detecting if the state of brain activity is
+     * Relaxation brain activity (EEG spectrum for simply “nice” relaxation, during which the person can not adequately drive or write software).
+     * Defined as: the dominant frequency in the range of alpha (7-13 Hz) increases in amplitude (power spectrum) on greater than 20% but
+     * less than 30% within 3 minutes.
+     *
+     * @param channel Number for processing channel (1-4)
+     * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
+     */
+
+    public boolean processYellowForChannel(int channel) {
+        int length = fftValues.size();
+        ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
+
+
+        if (length >= STEP) {
+            ArrayList<Integer> yellows = new ArrayList<>();
+            ArrayList<Integer> yellowsUpper = new ArrayList<>();
+            ArrayList<Integer> yellowsLower = new ArrayList<>();
+
+            for (int i = length - STEP; i < length; i++) {
+                FftValue[] fftValues = fft.get(i);
+                yellowsLower.add(fftValues[channel].getData1());
+                yellows.add(fftValues[channel].getData2());
+                yellowsUpper.add(fftValues[channel].getData3());
+            }
+
+            for (int i = length - STEP; i < length; i++) {
+                FftValue[] fftValues = fft.get(i);
+                yellowsUpper.add(fftValues[channel].getData3());
+            }
+
+            int val1 = yellows.get(0);
+            int val2 = yellows.get(STEP - 1);
+
+            int val1lower = yellowsLower.get(0);
+            int val2lower = yellowsLower.get(STEP - 1);
+
+            int val1upper = yellowsUpper.get(0);
+            int val2upper = yellowsUpper.get(STEP - 1);
+
+            if (val2 > val1) {
+                boolean mainCondition = (val2 - val1) > YELLOW_DIFF_LOW && (val2 - val1) < YELLOW_DIFF_HIGH;
+                boolean lowCondition = val2lower > val1lower && (val2lower - val1lower) > (0.1 / (TIMESPAN / STEP));
+                boolean highCondition = val2upper < val1upper && (val1upper - val2upper) > (0.05 / (TIMESPAN / STEP));
+
+
+                return mainCondition && lowCondition && highCondition;
+            } else {
+                return false;
+            }
+
+        }
+
+        return false;
+
+
+    }
+
+    /**
+     * Returns flag which define the state of examined man detecting if the state of brain activity is Excessive stimulation of neurons and therefore
+     * the beginning of inappropriate, excessive actions. Defined as: the dominant frequency (range) of alpha (7-13 Hz) is reduced in amplitude (power spectrum)
+     * on greater than 20% for 3 minutes.
+     *
+     * @param channel Number for processing channel (1-4)
+     * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
+     */
+    public boolean processRed1ForChannel(int channel) {
+        int length = fftValues.size();
+        ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
+
+        if (length >= STEP) {
+            ArrayList<Integer> reds = new ArrayList<>();
+            ArrayList<Integer> redsUpper = new ArrayList<>();
+            ArrayList<Integer> redsLower = new ArrayList<>();
+
+            for (int i = length - STEP; i < length; i++) {
+                FftValue[] fftValues = fft.get(i);
+                redsLower.add(fftValues[channel].getData1());
+                reds.add(fftValues[channel].getData2());
+                redsUpper.add(fftValues[channel].getData3());
+            }
+
+
+            int val1 = reds.get(0);
+            int val2 = reds.get(STEP - 1);
+
+            int val1lower = redsLower.get(0);
+            int val2lower = redsLower.get(STEP - 1);
+
+            int val1upper = redsUpper.get(0);
+            int val2upper = redsUpper.get(STEP - 1);
+
+            if (val2 < val1) {
+                boolean mainCondition = (val1 - val2) > RED_1_DIFF_HIGH;
+                boolean lowCondition = val2lower < val1lower && (val1lower - val2lower) > (0.1 / (TIMESPAN / STEP));
+                boolean highCondition = val2upper > val1upper && (val2upper - val1upper) > (0.05 / (TIMESPAN / STEP));
+
+                return mainCondition && lowCondition && highCondition;
+            } else {
+                return false;
+            }
+
+        }
+
+        return false;
+
+
+    }
+
+
+    /**
+     * Returns flag which define the state of examined man detecting if the state of brain activity is in super relaxation.
+     * Defined as: the dominant frequency (range) of alpha (7-13 Hz) is increasing in amplitude (power spectrum) on greater than 30% for 3 minutes.
+     *
+     * @param channel Number for processing channel (1-4)
+     * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
+     */
+    public boolean processRed2ForChannel(int channel) {
+        int length = fftValues.size();
+        ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
+
+        if (length >= STEP) {
+            ArrayList<Integer> reds = new ArrayList<>();
+            ArrayList<Integer> redsUpper = new ArrayList<>();
+            ArrayList<Integer> redsLower = new ArrayList<>();
+
+            for (int i = length - STEP; i < length; i++) {
+                FftValue[] fftValues = fft.get(i);
+                redsLower.add(fftValues[channel].getData1());
+                reds.add(fftValues[channel].getData2());
+                redsUpper.add(fftValues[channel].getData3());
+            }
+
+
+            int val1 = reds.get(0);
+            int val2 = reds.get(STEP - 1);
+
+            int val1lower = redsLower.get(0);
+            int val2lower = redsLower.get(STEP - 1);
+
+            int val1upper = redsUpper.get(0);
+            int val2upper = redsUpper.get(STEP - 1);
+
+            if (val2 < val1) {
+                boolean mainCondition = (val1 - val2) > RED_1_DIFF_HIGH;
+                boolean lowCondition = val2lower < val1lower && (val1lower - val2lower) > (0.15 / (TIMESPAN / STEP));
+                boolean highCondition = val2upper > val1upper && (val2upper - val1upper) > (0.15 / (TIMESPAN / STEP));
+
+                return mainCondition && lowCondition && highCondition;
+            } else {
+                return false;
+            }
+
+        }
+
+        return false;
+    }
+
+
+    private static int average(List<Integer> list) {
+        // 'average' is undefined if there are no elements in the list.
+        if (list == null || list.isEmpty())
+            return 0;
+        // Calculate the summation of the elements in the list
+        long sum = 0;
+        int n = list.size();
+        // Iterating manually is faster than using an enhanced for loop.
+        for (int i = 0; i < n; i++)
+            sum += list.get(i);
+        // We don't want to perform an integer division, so the cast is mandatory.
+        return (int) (sum / n);
     }
 
     /**

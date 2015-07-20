@@ -1,4 +1,4 @@
-# Overview 
+# Overview
 The Brainiac library handles connections and data transfer between Braniac (alpha title) accessory and Android device.
 
 #Requirements
@@ -63,7 +63,7 @@ brainiacManager.startScan(onConnectCallback);
 
 # Reference
 ## Value
-Value - class which represents raw values received from Braniac accessory. It contains a few fields: 
+Value - class which represents raw values received from Braniac accessory. It contains a few fields:
 
 1. channel1 - brain activity measure for channel 1 (T3) - double
 2. channel2 - brain activity measure for channel 2 (O1) - double
@@ -140,7 +140,7 @@ public void setOnReceiveFftDataCallback(OnReceiveFftDataCallback onReceiveFftDat
 * **onReceiveFftDataCallback** - An implementation of OnReceiveFftDataCallback
 
 ###getBrainiacManager
-Returns BrainiacManager singleton. 
+Returns BrainiacManager singleton.
 
 ```java
 public static BrainiacManager getBrainiacManager(Context context)
@@ -190,5 +190,38 @@ Release all using resources
 public void release()
 ```
 
+###processGreenChannel
+Returns flag which define the state of examined man detecting if the state of brain activity is full and active. Defined as: When closing the eyes or with simple contemplation of neutral images dominant frequency in the range of alpha (7-13 Hz) has no oscillations more than 20% for 3 minutes during the registration process. Method returns flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
 
+*Parameter*
+* **channel** - Number for processing channel (1-4)
+```java
+public boolean processGreenChannel(int channel)
+```
 
+###processYellowForChannel
+Returns flag which define the state of examined man detecting if the state of brain activity is Relaxation brain activity (EEG spectrum for simply “nice” relaxation, during which the person can not adequately drive or write software). Defined as: the dominant frequency in the range of alpha (7-13 Hz) increases in amplitude (power spectrum) on greater than 20% but less than 30% within 3 minutes. Method returns flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
+
+*Parameter*
+* **channel** - Number for processing channel (1-4)
+```java
+public boolean processYellowForChannel(int channel)
+```
+
+###processRed1ForChannel
+Returns flag which define the state of examined man detecting if the state of brain activity is Excessive stimulation of neurons and therefore the beginning of inappropriate, excessive actions. Defined as: the dominant frequency (range) of alpha (7-13 Hz) is reduced in amplitude (power spectrum) on greater than 20% for 3 minutes. Method returns flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
+
+*Parameter*
+* **channel** - Number for processing channel (1-4)
+```java
+public boolean processRed1ForChannel(int channel)
+```
+
+###processRed2ForChannel
+Returns flag which define the state of examined man detecting if the state of brain activity is in super relaxation. Defined as: the dominant frequency (range) of alpha (7-13 Hz) is increasing in amplitude (power spectrum) on greater than 30% for 3 minutes. Method returns flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
+
+*Parameter*
+* **channel** - Number for processing channel (1-4)
+```java
+public boolean processRed2ForChannel(int channel)
+```
