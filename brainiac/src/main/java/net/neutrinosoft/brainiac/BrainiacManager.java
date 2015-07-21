@@ -230,7 +230,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     /**
      * Indicates whether BrainiacManager launched in test mode.
      *
-     * @return true if instance is in test mode , false otherwise
+     * @return true if instance is in test mode, false otherwise
      */
     public boolean isInTestMode() {
         return isTestMode;
@@ -557,6 +557,13 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         values.clear();
     }
 
+    /**
+     * Starts sending test data values via delegate methods (without using hardware accessory).
+     * Starts dispatching data via delegate methods immediately.
+     * Use this method to test correct data receiving sequences and draw sample data plots.
+     * @param frequency value of testing frequency
+     */
+
     public void startTest(final int frequency) {
         isTestMode = true;
         handler = new Handler();
@@ -588,7 +595,12 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
 
     }
 
+    /**
+     * Stop sending test data
+     */
     public void stopTest() {
+        values.clear();
+        fftValues.clear();
         if (isTestMode) {
             isTestMode = false;
             handler.removeCallbacks(testCallback);

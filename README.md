@@ -183,6 +183,21 @@ Indicates whether BrainiacManager launched in test mode. Returns true if instanc
 public boolean isInTestMode()
 ```
 
+###startTest
+Starts sending test data values via delegate methods (without using hardware accessory). Starts dispatching data via delegate methods immediately. Use this method to test correct data receiving sequences and draw sample data plots.
+
+*Parameter*
+
+* **frequency** - value of testing frequency.
+```java
+public void startTest(final int frequency)
+```
+
+###stopTest
+Stop sending test data
+```java
+public void stopTest()
+```
 ###stopScan
 Stops an ongoing Bluetooth LE device scan.
 
