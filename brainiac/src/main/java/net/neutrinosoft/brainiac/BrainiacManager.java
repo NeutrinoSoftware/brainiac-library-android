@@ -107,7 +107,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     }
 
     private FftValue[] getFftData() {
-        List<Value> rawData = values.subList(values.size() - 256, values.size());
+        List<Value> rawData = values.subList(values.size() - 250, values.size());
 
         double[] fftArray1 = new double[256];
         double[] fftArray2 = new double[256];
@@ -115,11 +115,18 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         double[] fftArray4 = new double[256];
 
         for (int i = 0; i < 256; i++) {
-            Value value = rawData.get(i);
-            fftArray1[i] = value.getChannel1();
-            fftArray2[i] = value.getChannel2();
-            fftArray3[i] = value.getChannel3();
-            fftArray4[i] = value.getChannel4();
+            if (i < 250) {
+                Value value = rawData.get(i);
+                fftArray1[i] = value.getChannel1();
+                fftArray2[i] = value.getChannel2();
+                fftArray3[i] = value.getChannel3();
+                fftArray4[i] = value.getChannel4();
+            } else {
+                fftArray1[i] = 0;
+                fftArray2[i] = 0;
+                fftArray3[i] = 0;
+                fftArray4[i] = 0;
+            }
 
         }
 
