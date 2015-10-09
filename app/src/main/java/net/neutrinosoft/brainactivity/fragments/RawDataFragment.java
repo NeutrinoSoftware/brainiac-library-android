@@ -31,31 +31,18 @@ import net.neutrinosoft.brainactivity.common.ValueZoom;
 import net.neutrinosoft.brainiac.Value;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.InjectViews;
-import butterknife.OnClick;
 
 public class RawDataFragment extends Fragment {
 
 
-    @InjectViews({R.id.chart0, R.id.chart1, R.id.chart2, R.id.chart3})
-    List<LineChart> charts;
-    @InjectView(R.id.timeZoomLabel)
-    TextView timeZoomLabel;
-    @InjectView(R.id.minusTimeZoom)
-    Button minusTimeZoom;
-    @InjectView(R.id.plusTimeZoom)
-    Button plusTimeZoom;
-    @InjectView(R.id.minusValueZoom)
-    Button minusValueZoom;
-    @InjectView(R.id.plusValueZoom)
-    Button plusValueZoom;
-    @InjectView(R.id.valueZoomLabel)
-    TextView valueZoomLabel;
+    private List<LineChart> charts = new ArrayList<>();
+    private TextView timeZoomLabel;
+    private TextView valueZoomLabel;
+    private Button minusTimeZoom;
+    private Button plusTimeZoom;
+    private Button minusValueZoom;
+    private Button plusValueZoom;
 
 
     List<Value> values = new ArrayList<>();
@@ -77,14 +64,150 @@ public class RawDataFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_raw_data, container, false);
-        ButterKnife.inject(this, view);
+
+        charts.add((LineChart) view.findViewById(R.id.chart0));
+        charts.add((LineChart) view.findViewById(R.id.chart1));
+        charts.add((LineChart) view.findViewById(R.id.chart2));
+        charts.add((LineChart) view.findViewById(R.id.chart3));
+
+        timeZoomLabel = (TextView) view.findViewById(R.id.timeZoomLabel);
+
+        minusTimeZoom = (Button) view.findViewById(R.id.minusTimeZoom);
+        minusTimeZoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (timeZoom) {
+                    case Two: {
+                        timeZoom = TimeZoom.One;
+                        minusTimeZoom.setEnabled(false);
+                        break;
+                    }
+                    case Four: {
+                        timeZoom = TimeZoom.Two;
+                        break;
+                    }
+                    case Five: {
+                        timeZoom = TimeZoom.Four;
+                        plusTimeZoom.setEnabled(true);
+                        break;
+                    }
+                }
+                timeZoomLabel.setText(timeZoom.getLabel());
+                for (LineChart lineChart : charts) {
+                    lineChart.setVisibleXRange(timeZoom.getZoomValue());
+                    lineChart.invalidate();
+
+                }
+            }
+        });
+
+        plusTimeZoom = (Button) view.findViewById(R.id.plusTimeZoom);
+        plusTimeZoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (timeZoom) {
+                    case One: {
+                        timeZoom = TimeZoom.Two;
+                        minusTimeZoom.setEnabled(true);
+                        break;
+                    }
+                    case Two: {
+                        timeZoom = TimeZoom.Four;
+                        break;
+                    }
+                    case Four: {
+                        timeZoom = TimeZoom.Five;
+                        plusTimeZoom.setEnabled(false);
+                        break;
+                    }
+                }
+                timeZoomLabel.setText(timeZoom.getLabel());
+                for (LineChart lineChart : charts) {
+                    lineChart.setVisibleXRange(timeZoom.getZoomValue());
+                    lineChart.invalidate();
+                }
+
+            }
+        });
+
+
+        valueZoomLabel = (TextView) view.findViewById(R.id.valueZoomLabel);
+
+        minusValueZoom = (Button) view.findViewById(R.id.minusValueZoom);
+        minusValueZoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (valueZoom) {
+                    case Forty: {
+                        valueZoom = ValueZoom.Twenty;
+                        minusValueZoom.setEnabled(false);
+                        break;
+                    }
+                    case OneHundred: {
+                        valueZoom = ValueZoom.Forty;
+                        break;
+                    }
+                    case TwoHundred: {
+                        valueZoom = ValueZoom.OneHundred;
+                        break;
+                    }
+                    case FourHundred: {
+                        valueZoom = ValueZoom.TwoHundred;
+                        plusValueZoom.setEnabled(true);
+                        break;
+
+                    }
+                }
+                valueZoomLabel.setText(valueZoom.getLabel());
+                for (LineChart lineChart : charts) {
+                    lineChart.getAxisLeft().setAxisMinValue(-valueZoom.getZoomValue());
+                    lineChart.getAxisLeft().setAxisMaxValue(valueZoom.getZoomValue());
+                }
+
+            }
+        });
+
+        plusValueZoom = (Button) view.findViewById(R.id.plusValueZoom);
+        plusValueZoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (valueZoom) {
+                    case Twenty: {
+                        valueZoom = ValueZoom.Forty;
+                        minusValueZoom.setEnabled(true);
+                        break;
+                    }
+                    case Forty: {
+                        valueZoom = ValueZoom.OneHundred;
+                        break;
+                    }
+                    case OneHundred: {
+                        valueZoom = ValueZoom.TwoHundred;
+                        break;
+                    }
+                    case TwoHundred: {
+                        valueZoom = ValueZoom.FourHundred;
+                        plusValueZoom.setEnabled(false);
+                        break;
+
+                    }
+                }
+                valueZoomLabel.setText(valueZoom.getLabel());
+                for (LineChart lineChart : charts) {
+                    lineChart.getAxisLeft().setAxisMinValue(-valueZoom.getZoomValue());
+                    lineChart.getAxisLeft().setAxisMaxValue(valueZoom.getZoomValue());
+                }
+
+            }
+        });
+
+
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
 
         xValuesList = new ArrayList<>();
         entriesList = new ArrayList<>();
@@ -94,119 +217,6 @@ public class RawDataFragment extends Fragment {
         initCharts();
         getActivity().registerReceiver(rawDataBroadcastReceiver, new IntentFilter(StartUpActivity.ACTION_NEW_VALUE));
     }
-
-    @OnClick(R.id.minusTimeZoom)
-    public void onMinusTimeZoomClick() {
-        switch (timeZoom) {
-            case Two: {
-                timeZoom = TimeZoom.One;
-                minusTimeZoom.setEnabled(false);
-
-                break;
-            }
-            case Four: {
-                timeZoom = TimeZoom.Two;
-                break;
-            }
-            case Five: {
-                timeZoom = TimeZoom.Four;
-                plusTimeZoom.setEnabled(true);
-                break;
-            }
-        }
-        timeZoomLabel.setText(timeZoom.getLabel());
-        for (LineChart lineChart : charts) {
-            lineChart.setVisibleXRange(timeZoom.getZoomValue());
-            lineChart.invalidate();
-
-        }
-    }
-
-    @OnClick(R.id.plusTimeZoom)
-    public void onPlusTimeZoomClick() {
-        switch (timeZoom) {
-            case One: {
-                timeZoom = TimeZoom.Two;
-                minusTimeZoom.setEnabled(true);
-                break;
-            }
-            case Two: {
-                timeZoom = TimeZoom.Four;
-                break;
-            }
-            case Four: {
-                timeZoom = TimeZoom.Five;
-                plusTimeZoom.setEnabled(false);
-                break;
-            }
-        }
-        timeZoomLabel.setText(timeZoom.getLabel());
-        for (LineChart lineChart : charts) {
-            lineChart.setVisibleXRange(timeZoom.getZoomValue());
-            lineChart.invalidate();
-        }
-    }
-
-    @OnClick(R.id.minusValueZoom)
-    public void onMinusValueZoomClick() {
-        switch (valueZoom) {
-            case Forty: {
-                valueZoom = ValueZoom.Twenty;
-                minusValueZoom.setEnabled(false);
-                break;
-            }
-            case OneHundred: {
-                valueZoom = ValueZoom.Forty;
-                break;
-            }
-            case TwoHundred: {
-                valueZoom = ValueZoom.OneHundred;
-                break;
-            }
-            case FourHundred: {
-                valueZoom = ValueZoom.TwoHundred;
-                plusValueZoom.setEnabled(true);
-                break;
-
-            }
-        }
-        valueZoomLabel.setText(valueZoom.getLabel());
-        for (LineChart lineChart : charts) {
-            lineChart.getAxisLeft().setAxisMinValue(-valueZoom.getZoomValue());
-            lineChart.getAxisLeft().setAxisMaxValue(valueZoom.getZoomValue());
-        }
-    }
-
-    @OnClick(R.id.plusValueZoom)
-    public void onPlusValueZoomClick() {
-        switch (valueZoom) {
-            case Twenty: {
-                valueZoom = ValueZoom.Forty;
-                minusValueZoom.setEnabled(true);
-                break;
-            }
-            case Forty: {
-                valueZoom = ValueZoom.OneHundred;
-                break;
-            }
-            case OneHundred: {
-                valueZoom = ValueZoom.TwoHundred;
-                break;
-            }
-            case TwoHundred: {
-                valueZoom = ValueZoom.FourHundred;
-                plusValueZoom.setEnabled(false);
-                break;
-
-            }
-        }
-        valueZoomLabel.setText(valueZoom.getLabel());
-        for (LineChart lineChart : charts) {
-            lineChart.getAxisLeft().setAxisMinValue(-valueZoom.getZoomValue());
-            lineChart.getAxisLeft().setAxisMaxValue(valueZoom.getZoomValue());
-        }
-    }
-
 
     private void initCharts() {
         int[] colors = new int[]{R.color.green, R.color.yellow, R.color.red1, R.color.red2};
@@ -275,10 +285,16 @@ public class RawDataFragment extends Fragment {
             Value value = intent.getExtras().getParcelable(MainActivity.EXTRA_VALUES);
 
             if (value != null) {
+
+                if (values.size() > 2048) {
+                    xValuesList.clear();
+                    values.clear();
+                }
+
                 xValuesList.add("");
                 values.add(value);
 
-                if ((values.size() % 125) == 0) {
+                if ((values.size() % 250) == 0) {
                     for (int i = 0; i < charts.size(); i++) {
 
                         LineChart chart = charts.get(i);

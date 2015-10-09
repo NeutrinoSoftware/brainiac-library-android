@@ -10,30 +10,40 @@ import android.widget.Button;
 
 import net.neutrinosoft.brainactivity.R;
 
-import butterknife.ButterKnife;
-import butterknife.InjectViews;
-import butterknife.OnClick;
+public class IndicatorsFragment extends Fragment implements View.OnClickListener {
 
-public class IndicatorsFragment extends Fragment {
+    private Button t3;
+    private Button t4;
+    private Button o1;
+    private Button o2;
 
-    @InjectViews({R.id.t3, R.id.o1, R.id.t4, R.id.o2})
-    Button[] channels;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_indicators, container, false);
-        ButterKnife.inject(this, view);
+
+        t3 = (Button) view.findViewById(R.id.t3);
+        t3.setOnClickListener(this);
+
+        t4 = (Button) view.findViewById(R.id.t4);
+        t4.setOnClickListener(this);
+
+        o1 = (Button) view.findViewById(R.id.o1);
+        o1.setOnClickListener(this);
+
+        o2 = (Button) view.findViewById(R.id.o2);
+        o2.setOnClickListener(this);
+
         return view;
     }
 
 
-    @OnClick({R.id.t3, R.id.o1, R.id.t4, R.id.o2})
-    public void onChannelClick(Button selectedButton) {
-        for (Button button : channels) {
-            button.setEnabled(true);
-        }
-        selectedButton.setEnabled(false);
+    @Override
+    public void onClick(View v) {
+        t3.setEnabled(v.getId() == t3.getId());
+        t4.setEnabled(v.getId() == t4.getId());
+        o1.setEnabled(v.getId() == o1.getId());
+        o2.setEnabled(v.getId() == o2.getId());
     }
-
-
 }

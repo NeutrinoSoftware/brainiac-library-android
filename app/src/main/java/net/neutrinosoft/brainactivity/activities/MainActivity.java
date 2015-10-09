@@ -3,7 +3,7 @@ package net.neutrinosoft.brainactivity.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -11,14 +11,8 @@ import com.astuetz.PagerSlidingTabStrip;
 import net.neutrinosoft.brainactivity.R;
 import net.neutrinosoft.brainactivity.adapters.MainActivityPagerAdapter;
 
-import butterknife.InjectView;
 
-public class MainActivity extends BaseActivity {
-
-    @InjectView(R.id.tabs)
-    PagerSlidingTabStrip tabs;
-    @InjectView(R.id.viewPager)
-    ViewPager viewPager;
+public class MainActivity extends FragmentActivity {
 
 
     public static final String EXTRA_VALUES = "EXTRA_VALUES";
@@ -32,6 +26,10 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
+
         MainActivityPagerAdapter adapter = new MainActivityPagerAdapter(getSupportFragmentManager());
 
         viewPager.setOffscreenPageLimit(2);

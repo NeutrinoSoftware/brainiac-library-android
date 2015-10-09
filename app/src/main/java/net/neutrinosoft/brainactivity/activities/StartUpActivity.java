@@ -4,12 +4,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.crashlytics.android.Crashlytics;
 
 import net.neutrinosoft.brainactivity.R;
 import net.neutrinosoft.brainiac.BrainiacManager;
@@ -21,25 +21,16 @@ import net.neutrinosoft.brainiac.callback.OnReceiveFftDataCallback;
 
 import java.util.Arrays;
 
-import butterknife.InjectView;
-import butterknife.OnClick;
-import io.fabric.sdk.android.Fabric;
 
-public class StartUpActivity extends BaseActivity {
+public class StartUpActivity extends FragmentActivity implements View.OnClickListener {
 
 
-    @InjectView(R.id.statusLabel)
-    TextView statusLabel;
-    @InjectView(R.id.connectBtn)
-    Button connectBtn;
-    @InjectView(R.id.plusFrequency)
-    Button plusFrequency;
-    @InjectView(R.id.minusFrequency)
-    Button minusFrequency;
-    @InjectView(R.id.frequency)
-    TextView frequencyLabel;
-    @InjectView(R.id.startTest)
-    Button startTest;
+    private TextView statusLabel;
+    private TextView frequencyLabel;
+    private Button connectBtn;
+    private Button plusFrequency;
+    private Button minusFrequency;
+    private Button startTest;
 
     private int frequency = 3;
 
@@ -74,8 +65,25 @@ public class StartUpActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_startup);
+        statusLabel = (TextView) findViewById(R.id.statusLabel);
+        frequencyLabel = (TextView) findViewById(R.id.frequency);
+        connectBtn = (Button) findViewById(R.id.connectBtn);
+        plusFrequency = (Button) findViewById(R.id.plusFrequency);
+        minusFrequency = (Button) findViewById(R.id.minusFrequency);
+        startTest = (Button) findViewById(R.id.startTest);
+
+        Button showPlotBtn = (Button) findViewById(R.id.showPlotBtn);
+        showPlotBtn.setOnClickListener(this);
+
+        connectBtn.setOnClickListener(this);
+        minusFrequency.setOnClickListener(this);
+        plusFrequency.setOnClickListener(this);
+        startTest.setOnClickListener(this);
+
+
+
+
         brainiacManager = BrainiacManager.getBrainiacManager(this);
         brainiacManager.setOnReceiveDataCallback(new OnReceiveDataCallback() {
             @Override
@@ -110,73 +118,72 @@ public class StartUpActivity extends BaseActivity {
         }
     }
 
-    @OnClick(R.id.showPlotBtn)
-    void showPlotWithData() {
-        startActivity(MainActivity.createIntent(this));
-    }
-
-    @OnClick(R.id.connectBtn)
-    void onConnectToDeviceClick() {
-        startTest.setText(R.string.start_test);
-        brainiacManager.stopTest();
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
-            if (bluetoothAdapter.isDiscovering()) {
-                brainiacManager.stopScan();
-                connectBtn.setText(R.string.connect_to_device);
-                statusLabel.setText(R.string.ready_to_scan);
-            } else if (brainiacManager.isConnected()) {
-                brainiacManager.release();
-                connectBtn.setText(R.string.connect_to_device);
-                statusLabel.setText(R.string.ready_to_scan);
-            } else {
-                brainiacManager.startScan(onConnectCallback);
-                statusLabel.setText(R.string.scanning_started);
-                connectBtn.setText(R.string.stop);
-            }
-        } else {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
-    }
-
-
-    @OnClick(R.id.minusFrequency)
-    public void onMinusFrequencyClick() {
-        if (frequency == 4) {
-            minusFrequency.setEnabled(false);
-        } else if (frequency == 24) {
-            plusFrequency.setEnabled(true);
-        }
-        frequencyLabel.setText(String.valueOf(--frequency));
-    }
-
-    @OnClick(R.id.plusFrequency)
-    public void onPlusFrequencyClick() {
-        if (frequency == 23) {
-            plusFrequency.setEnabled(false);
-        } else if (frequency == 3) {
-            minusFrequency.setEnabled(true);
-        }
-        frequencyLabel.setText(String.valueOf(++frequency));
-    }
-
-    @OnClick(R.id.startTest)
-    public void onStartTestClick(Button button) {
-        if (brainiacManager.isInTestMode()) {
-            button.setText(R.string.start_test);
-            brainiacManager.stopTest();
-        } else {
-            button.setText(R.string.stop);
-            brainiacManager.startTest(frequency);
-        }
-
-    }
-
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         brainiacManager.release();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.showPlotBtn: {
+                startActivity(MainActivity.createIntent(this));
+                break;
+            }
+            case R.id.connectBtn: {
+                startTest.setText(R.string.start_test);
+                brainiacManager.stopTest();
+                BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
+                    if (bluetoothAdapter.isDiscovering()) {
+                        brainiacManager.stopScan();
+                        connectBtn.setText(R.string.connect_to_device);
+                        statusLabel.setText(R.string.ready_to_scan);
+                    } else if (brainiacManager.isConnected()) {
+                        brainiacManager.release();
+                        connectBtn.setText(R.string.connect_to_device);
+                        statusLabel.setText(R.string.ready_to_scan);
+                    } else {
+                        brainiacManager.startScan(onConnectCallback);
+                        statusLabel.setText(R.string.scanning_started);
+                        connectBtn.setText(R.string.stop);
+                    }
+                } else {
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                }
+                break;
+            }
+            case R.id.minusFrequency: {
+                if (frequency == 4) {
+                    minusFrequency.setEnabled(false);
+                } else if (frequency == 24) {
+                    plusFrequency.setEnabled(true);
+                }
+                frequencyLabel.setText(String.valueOf(--frequency));
+                break;
+            }
+            case R.id.plusFrequency: {
+                if (frequency == 23) {
+                    plusFrequency.setEnabled(false);
+                } else if (frequency == 3) {
+                    minusFrequency.setEnabled(true);
+                }
+                frequencyLabel.setText(String.valueOf(++frequency));
+                break;
+            }
+            case R.id.startTest: {
+                if (brainiacManager.isInTestMode()) {
+                    startTest.setText(R.string.start_test);
+                    brainiacManager.stopTest();
+                } else {
+                    startTest.setText(R.string.stop);
+                    brainiacManager.startTest(frequency);
+                }
+                break;
+            }
+        }
     }
 }

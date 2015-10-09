@@ -30,17 +30,13 @@ import net.neutrinosoft.brainiac.FftValue;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
-import butterknife.InjectViews;
-
 public class SpectrumFragment extends Fragment {
 
-    @InjectViews({R.id.chart0, R.id.chart1, R.id.chart2, R.id.chart3})
-    List<LineChart> charts;
-    List<String> xValues = new ArrayList<>();
-    List<List<Entry>> blueEntries = new ArrayList<>();
-    List<List<Entry>> yellowEntries = new ArrayList<>();
-    List<List<Entry>> grayEntries = new ArrayList<>();
+    private List<LineChart> charts = new ArrayList<>();
+    private List<String> xValues = new ArrayList<>();
+    private List<List<Entry>> blueEntries = new ArrayList<>();
+    private List<List<Entry>> yellowEntries = new ArrayList<>();
+    private List<List<Entry>> grayEntries = new ArrayList<>();
 
     private SpectrumBroadcastReceiver spectrumBroadcastReceiver;
 
@@ -48,7 +44,12 @@ public class SpectrumFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_spectrum, container, false);
-        ButterKnife.inject(this, view);
+
+        charts.add((LineChart) view.findViewById(R.id.chart0));
+        charts.add((LineChart) view.findViewById(R.id.chart1));
+        charts.add((LineChart) view.findViewById(R.id.chart2));
+        charts.add((LineChart) view.findViewById(R.id.chart3));
+
         return view;
     }
 
@@ -61,7 +62,7 @@ public class SpectrumFragment extends Fragment {
 
         for (int i = 0; i < charts.size(); i++) {
             LineChart chart = charts.get(i);
-chart.setPinchZoom(false);
+            chart.setPinchZoom(false);
             chart.setDoubleTapToZoomEnabled(false);
             List<LineDataSet> lineDataSets = new ArrayList<>();
 

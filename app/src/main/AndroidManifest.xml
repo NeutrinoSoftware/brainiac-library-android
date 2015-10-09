@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -29,10 +30,6 @@
             android:name=".activities.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"/>
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="c3a67f5a7f20ced3ce62e0d9a7c28d77279b639b" />
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

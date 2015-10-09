@@ -307,9 +307,14 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     public final void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         byte[] data = characteristic.getValue();
         Log.d("onCharacteristicChanged", Arrays.toString(data));
-        Value firstValue = new Value();
 
-        short orderNumber = BitUtils.getShortFromLittleBytes(data[0], data[1]);
+        short orderNumber = BitUtils.getShortFromBigBytes(data[0], data[1]);
+
+        if (values.size() > 2048 ) {
+            BrainiacManager.values.clear();
+        }
+
+        Value firstValue = new Value();
         firstValue.setHardwareOrderNumber(orderNumber);
         firstValue.setTimeframe(new Date().getTime());
         firstValue.setChannel1(Math.floor(K * BitUtils.getShortFromBigBytes(data[3], data[4])));
@@ -327,6 +332,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         secondValue.setChannel3(Math.floor(K * BitUtils.getShortFromBigBytes(data[16], data[17])));
         secondValue.setChannel4(Math.floor(K * BitUtils.getShortFromBigBytes(data[18], data[19])));
         BrainiacManager.values.add(secondValue);
+
         if (onReceiveDataCallback != null) {
             onReceiveDataCallback.onReceiveData(firstValue);
             onReceiveDataCallback.onReceiveData(secondValue);
