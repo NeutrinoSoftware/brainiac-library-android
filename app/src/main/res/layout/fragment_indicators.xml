@@ -72,18 +72,13 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <View
+                android:id="@+id/green"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/grey"
-                android:padding="10dp">
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
+                android:padding="10dp" />
 
         </LinearLayout>
 
@@ -110,18 +105,13 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <View
+                android:id="@+id/yellow"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/grey"
-                android:padding="10dp">
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
+                android:padding="10dp" />
 
         </LinearLayout>
 
@@ -148,18 +138,13 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <View
+                android:id="@+id/red1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/grey"
-                android:padding="10dp">
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
+                android:padding="10dp" />
 
         </LinearLayout>
 
@@ -186,18 +171,13 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <View
+                android:id="@+id/red2"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/grey"
-                android:padding="10dp">
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
+                android:padding="10dp" />
 
         </LinearLayout>
 

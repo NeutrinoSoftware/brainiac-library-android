@@ -27,6 +27,7 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
 
     private TextView statusLabel;
     private TextView frequencyLabel;
+    private TextView battery;
     private Button connectBtn;
     private Button plusFrequency;
     private Button minusFrequency;
@@ -44,7 +45,7 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
         @Override
         public void onConnectSuccess() {
             connectBtn.setText(R.string.disconnect);
-            statusLabel.setText("Connected");
+            statusLabel.setText(R.string.connected);
 
         }
 
@@ -66,8 +67,10 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
+
         statusLabel = (TextView) findViewById(R.id.statusLabel);
         frequencyLabel = (TextView) findViewById(R.id.frequency);
+        battery = (TextView) findViewById(R.id.battery);
         connectBtn = (Button) findViewById(R.id.connectBtn);
         plusFrequency = (Button) findViewById(R.id.plusFrequency);
         minusFrequency = (Button) findViewById(R.id.minusFrequency);
@@ -123,6 +126,14 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
     protected void onDestroy() {
         super.onDestroy();
         brainiacManager.release();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (brainiacManager.isConnected()){
+            battery.setText(String.format("Battery Level: %d", brainiacManager.getBatteryLevel()));
+        }
     }
 
     @Override

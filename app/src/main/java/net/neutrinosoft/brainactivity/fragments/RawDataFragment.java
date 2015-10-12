@@ -289,6 +289,9 @@ public class RawDataFragment extends Fragment {
                 if (values.size() > 2048) {
                     xValuesList.clear();
                     values.clear();
+                    for (List list : entriesList) {
+                        list.clear();
+                    }
                 }
 
                 xValuesList.add("");

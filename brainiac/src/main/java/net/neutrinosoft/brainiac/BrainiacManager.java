@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The BrainiacManager class handles connections and data transfer between Braniac (alpha title) accessory and Android device.
@@ -45,6 +46,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
 
     private static ArrayList<Value> values = new ArrayList<>();
     private static ArrayList<FftValue[]> fftValues = new ArrayList<>();
+    private static int batteryLevel = 0;
     private Context context;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothDevice bluetoothDevice;
@@ -69,6 +71,9 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     private final static double RED_2_DIFF_HIGH = RED_2_FLAG / (TIMESPAN / STEP);
     private Handler handler;
     private Runnable testCallback;
+
+    private final static String TRANSFER_CHARACTERISTIC_UUID = "6E400002-B534-f393-67a9-e50e24dcca9e";
+    private final static String BATTERY_LEVEL_CHARACTERISTIC_UUID = "00000000-0000-0000-0000-000000000000";
 
 
     /**
@@ -262,13 +267,30 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             bluetoothAdapter.stopLeScan(this);
         } else {
+            bluetoothAdapter.getBluetoothLeScanner().stopScan(new ScanCallback() {
 
+                @Override
+                public void onScanFailed(int errorCode) {
+                    super.onScanFailed(errorCode);
+                    onConnectCallback.onConnectFailed();
+                }
+
+                @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    super.onScanResult(callbackType, result);
+                    if (result.getDevice() != null && DEVICE_NAME.equals(result.getDevice().getName())) {
+                        bluetoothDevice = result.getDevice();
+                        stopScan();
+                        connectToDevice();
+                    }
+                }
+            });
         }
     }
 
     private void connectToDevice() {
         try {
-//            onConnectCallback.onConnectSuccess();
+            onConnectCallback.onConnectSuccess();
             bluetoothDevice.connectGatt(context, false, this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -282,6 +304,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 bluetoothGatt = gatt;
                 bluetoothGatt.discoverServices();
+
             }
         }
     }
@@ -305,42 +328,56 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
 
     @Override
     public final void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-        byte[] data = characteristic.getValue();
-        Log.d("onCharacteristicChanged", Arrays.toString(data));
+        if (characteristic.getUuid().equals(UUID.fromString(TRANSFER_CHARACTERISTIC_UUID))) {
+            byte[] data = characteristic.getValue();
+            Log.d("onCharacteristicChanged", Arrays.toString(data));
 
-        short orderNumber = BitUtils.getShortFromBigBytes(data[0], data[1]);
+            short orderNumber = BitUtils.getShortFromBigBytes(data[0], data[1]);
 
-        if (values.size() > 2048 ) {
-            BrainiacManager.values.clear();
+            if (values.size() > 2048) {
+                BrainiacManager.values.clear();
+            }
+
+            Value firstValue = new Value();
+            firstValue.setHardwareOrderNumber(orderNumber);
+            firstValue.setTimeframe(new Date().getTime());
+            firstValue.setChannel1(Math.floor(K * BitUtils.getShortFromBigBytes(data[3], data[4])));
+            firstValue.setChannel2(Math.floor(K * BitUtils.getShortFromBigBytes(data[5], data[6])));
+            firstValue.setChannel3(Math.floor(K * BitUtils.getShortFromBigBytes(data[7], data[8])));
+            firstValue.setChannel4(Math.floor(K * BitUtils.getShortFromBigBytes(data[9], data[10])));
+            BrainiacManager.values.add(firstValue);
+
+
+            Value secondValue = new Value();
+            secondValue.setHardwareOrderNumber(orderNumber + 1);
+            secondValue.setTimeframe(new Date().getTime());
+            secondValue.setChannel1(Math.floor(K * BitUtils.getShortFromBigBytes(data[12], data[13])));
+            secondValue.setChannel2(Math.floor(K * BitUtils.getShortFromBigBytes(data[14], data[15])));
+            secondValue.setChannel3(Math.floor(K * BitUtils.getShortFromBigBytes(data[16], data[17])));
+            secondValue.setChannel4(Math.floor(K * BitUtils.getShortFromBigBytes(data[18], data[19])));
+            BrainiacManager.values.add(secondValue);
+
+            if (onReceiveDataCallback != null) {
+                onReceiveDataCallback.onReceiveData(firstValue);
+                onReceiveDataCallback.onReceiveData(secondValue);
+            }
+            if (onReceiveFftDataCallback != null && (BrainiacManager.values.size() % 256) == 0) {
+                onReceiveFftDataCallback.onReceiveData(getFftData());
+            }
+        } else if (characteristic.getUuid().equals(UUID.fromString(BATTERY_LEVEL_CHARACTERISTIC_UUID))) {
+            batteryLevel = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
         }
 
-        Value firstValue = new Value();
-        firstValue.setHardwareOrderNumber(orderNumber);
-        firstValue.setTimeframe(new Date().getTime());
-        firstValue.setChannel1(Math.floor(K * BitUtils.getShortFromBigBytes(data[3], data[4])));
-        firstValue.setChannel2(Math.floor(K * BitUtils.getShortFromBigBytes(data[5], data[6])));
-        firstValue.setChannel3(Math.floor(K * BitUtils.getShortFromBigBytes(data[7], data[8])));
-        firstValue.setChannel4(Math.floor(K * BitUtils.getShortFromBigBytes(data[9], data[10])));
-        BrainiacManager.values.add(firstValue);
+    }
 
+    /**
+     * Returns battery level
+     *
+     * @return battery level
+     */
 
-        Value secondValue = new Value();
-        secondValue.setHardwareOrderNumber(orderNumber + 1);
-        secondValue.setTimeframe(new Date().getTime());
-        secondValue.setChannel1(Math.floor(K * BitUtils.getShortFromBigBytes(data[12], data[13])));
-        secondValue.setChannel2(Math.floor(K * BitUtils.getShortFromBigBytes(data[14], data[15])));
-        secondValue.setChannel3(Math.floor(K * BitUtils.getShortFromBigBytes(data[16], data[17])));
-        secondValue.setChannel4(Math.floor(K * BitUtils.getShortFromBigBytes(data[18], data[19])));
-        BrainiacManager.values.add(secondValue);
-
-        if (onReceiveDataCallback != null) {
-            onReceiveDataCallback.onReceiveData(firstValue);
-            onReceiveDataCallback.onReceiveData(secondValue);
-        }
-        if (onReceiveFftDataCallback != null && (BrainiacManager.values.size() % 256) == 0) {
-            onReceiveFftDataCallback.onReceiveData(getFftData());
-        }
-
+    public int getBatteryLevel() {
+        return batteryLevel;
     }
 
     /**
@@ -348,7 +385,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
      * Defined as: When closing the eyes or with simple contemplation of neutral images dominant frequency in the range of alpha (7-13 Hz)
      * has no oscillations more than 20% for 3 minutes during the registration process.
      *
-     * @param channel Number for processing channel (1-4)
+     * @param channel Number for processing channel (0-3)
      * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
      */
 
@@ -390,7 +427,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
      * Defined as: the dominant frequency in the range of alpha (7-13 Hz) increases in amplitude (power spectrum) on greater than 20% but
      * less than 30% within 3 minutes.
      *
-     * @param channel Number for processing channel (1-4)
+     * @param channel Number for processing channel (0-3)
      * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
      */
 
@@ -448,7 +485,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
      * the beginning of inappropriate, excessive actions. Defined as: the dominant frequency (range) of alpha (7-13 Hz) is reduced in amplitude (power spectrum)
      * on greater than 20% for 3 minutes.
      *
-     * @param channel Number for processing channel (1-4)
+     * @param channel Number for processing channel (0-3)
      * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
      */
     public boolean processRed1ForChannel(int channel) {
@@ -499,7 +536,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
      * Returns flag which define the state of examined man detecting if the state of brain activity is in super relaxation.
      * Defined as: the dominant frequency (range) of alpha (7-13 Hz) is increasing in amplitude (power spectrum) on greater than 30% for 3 minutes.
      *
-     * @param channel Number for processing channel (1-4)
+     * @param channel Number for processing channel (0-3)
      * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
      */
     public boolean processRed2ForChannel(int channel) {
@@ -563,7 +600,6 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
      */
     public void release() {
         stopScan();
-        bluetoothAdapter.disable();
         if (bluetoothGatt != null) {
             bluetoothGatt.disconnect();
         }
