@@ -22,4 +22,7 @@
     <string name="connected">"Connected"</string>
     <string name="stop">Stop</string>
     <string name="start_test">Start test</string>
+    <string name="device_found">Device found</string>
+    <string name="connecting_to">"Connecting to"</string>
+    <string name="disconnecting">Disconnecting</string>
 </resources>
