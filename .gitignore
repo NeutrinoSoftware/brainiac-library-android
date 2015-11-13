@@ -1,3 +1,31 @@
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio
+
+*.iml
+
+# Directory-based project format:
+.idea/
+
+# File-based project format:
+*.ipr
+*.iws
+
+## Plugin-specific files:
+
+# IntelliJ
+/out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
 # Built application files
 *.apk
 *.ap_
@@ -15,7 +43,7 @@ gen/
 # Gradle files
 .gradle/
 build/
-/*/build/
+*/build/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -25,6 +53,9 @@ proguard/
 
 # Log Files
 *.log
-.idea/libraries/appcompat_v7_23_0_1.xml
-.idea/libraries/support_annotations_23_0_1.xml
-.idea/libraries/support_v4_23_0_1.xml
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Android Studio captures folder
+captures/

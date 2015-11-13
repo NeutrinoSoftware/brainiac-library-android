@@ -1,34 +1,35 @@
 package net.neutrinosoft.brainactivity.activities;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import net.neutrinosoft.brainactivity.R;
 import net.neutrinosoft.brainiac.BrainiacManager;
 import net.neutrinosoft.brainiac.FftValue;
 import net.neutrinosoft.brainiac.Value;
-import net.neutrinosoft.brainiac.callback.OnConnectCallback;
+import net.neutrinosoft.brainiac.callback.OnDeviceCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveDataCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveFftDataCallback;
-
-import java.util.Arrays;
+import net.neutrinosoft.brainiac.callback.OnScanCallback;
 
 
 public class StartUpActivity extends FragmentActivity implements View.OnClickListener {
-
-
+    
+    public static final String TAG = StartUpActivity.class.getSimpleName();
+    
     private TextView statusLabel;
     private TextView frequencyLabel;
     private TextView battery;
     private Button connectBtn;
+    private Button stopScanBtn;
+    private Button disconnectBtn;
     private Button plusFrequency;
     private Button minusFrequency;
     private Button startTest;
@@ -41,27 +42,108 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
 
     private BrainiacManager brainiacManager;
 
-    private OnConnectCallback onConnectCallback = new OnConnectCallback() {
-        @Override
-        public void onConnectSuccess() {
-            connectBtn.setText(R.string.disconnect);
-            statusLabel.setText(R.string.connected);
+    private OnScanCallback onScanCallback = new OnScanCallback() {
 
+        @Override
+        public void onScanStart() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "onScanStart()");
+                    showStopScanView();
+                }
+            });
         }
 
         @Override
-        public void onConnectFailed() {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
+        public void onScanStop() {
+            runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    connectBtn.setText(R.string.connect_to_device);
-                    statusLabel.setText(R.string.no_devices_found);
+                    Log.d(TAG, "onScanStop()");
                 }
-            }, 10000);
+            });
+        }
+
+        @Override
+        public void onScanFailed(int errorCode) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "onScanFailed()");
+                    showConnectView();
+                }
+            });
         }
     };
 
+    private OnDeviceCallback onDeviceCallback = new OnDeviceCallback() {
+        @Override
+        public void onDeviceFound(BluetoothDevice device) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "onDeviceFound()");
+                    statusLabel.setText(R.string.device_found);
+                }
+            });
+        }
+
+        @Override
+        public void onDeviceConnected(BluetoothDevice device) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "onDeviceConnected()");
+                    showDisconnectView();
+                }
+            });
+        }
+
+        @Override
+        public void onDeviceConnecting(final BluetoothDevice device) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "onDeviceConnecting()");
+                    statusLabel.setText(String.format("%s %s", getString(R.string.connecting_to), device.getName()));
+                }
+            });
+        }
+
+        @Override
+        public void onDeviceDisconnected(BluetoothDevice device) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "onDeviceDisconnected()");
+                    showConnectView();
+                }
+            });
+        }
+
+        @Override
+        public void onDeviceConnectionError(BluetoothDevice device) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "onDeviceConnectionError()");
+                    showConnectView();
+                }
+            });
+        }
+
+        @Override
+        public void onDeviceDisconnecting(final BluetoothDevice device) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "onDeviceDisconnecting()");
+                    statusLabel.setText(R.string.disconnecting);
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +154,8 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
         frequencyLabel = (TextView) findViewById(R.id.frequency);
         battery = (TextView) findViewById(R.id.battery);
         connectBtn = (Button) findViewById(R.id.connectBtn);
+        stopScanBtn = (Button) findViewById(R.id.stopScanBtn);
+        disconnectBtn = (Button) findViewById(R.id.disconnectBtn);
         plusFrequency = (Button) findViewById(R.id.plusFrequency);
         minusFrequency = (Button) findViewById(R.id.minusFrequency);
         startTest = (Button) findViewById(R.id.startTest);
@@ -79,15 +163,20 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
         Button showPlotBtn = (Button) findViewById(R.id.showPlotBtn);
         showPlotBtn.setOnClickListener(this);
 
+        disconnectBtn.setVisibility(View.GONE);
+        stopScanBtn.setVisibility(View.GONE);
+
         connectBtn.setOnClickListener(this);
+        disconnectBtn.setOnClickListener(this);
+        stopScanBtn.setOnClickListener(this);
         minusFrequency.setOnClickListener(this);
         plusFrequency.setOnClickListener(this);
         startTest.setOnClickListener(this);
 
 
-
-
         brainiacManager = BrainiacManager.getBrainiacManager(this);
+        brainiacManager.setOnScanCallback(onScanCallback);
+        brainiacManager.setOnDeviceCallback(onDeviceCallback);
         brainiacManager.setOnReceiveDataCallback(new OnReceiveDataCallback() {
             @Override
             public void onReceiveData(Value value) {
@@ -100,12 +189,13 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
         brainiacManager.setOnReceiveFftDataCallback(new OnReceiveFftDataCallback() {
             @Override
             public void onReceiveData(FftValue[] fftValues) {
-                Log.d("FFT-DATA", Arrays.toString(fftValues));
                 final Intent fftDataIntent = new Intent(ACTION_FFT_VALUE);
                 fftDataIntent.putExtra(MainActivity.EXTRA_VALUES, fftValues);
                 sendBroadcast(fftDataIntent);
             }
         });
+
+        showConnectView();
     }
 
 
@@ -114,13 +204,12 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT) {
             if (resultCode == RESULT_OK) {
-                brainiacManager.startScan(onConnectCallback);
+                connect();
             } else {
                 Toast.makeText(this, getString(R.string.please_enable_bluetooth), Toast.LENGTH_LONG).show();
             }
         }
     }
-
 
     @Override
     protected void onDestroy() {
@@ -131,13 +220,14 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
     @Override
     protected void onResume() {
         super.onResume();
-        if (brainiacManager.isConnected()){
+        if (brainiacManager.isConnected()) {
             battery.setText(String.format("Battery Level: %d", brainiacManager.getBatteryLevel()));
         }
     }
 
     @Override
     public void onClick(View v) {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         switch (v.getId()) {
             case R.id.showPlotBtn: {
                 startActivity(MainActivity.createIntent(this));
@@ -146,25 +236,21 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
             case R.id.connectBtn: {
                 startTest.setText(R.string.start_test);
                 brainiacManager.stopTest();
-                BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
                 if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
-                    if (bluetoothAdapter.isDiscovering()) {
-                        brainiacManager.stopScan();
-                        connectBtn.setText(R.string.connect_to_device);
-                        statusLabel.setText(R.string.ready_to_scan);
-                    } else if (brainiacManager.isConnected()) {
-                        brainiacManager.release();
-                        connectBtn.setText(R.string.connect_to_device);
-                        statusLabel.setText(R.string.ready_to_scan);
-                    } else {
-                        brainiacManager.startScan(onConnectCallback);
-                        statusLabel.setText(R.string.scanning_started);
-                        connectBtn.setText(R.string.stop);
-                    }
+                    connect();
                 } else {
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
                 }
+                break;
+            }
+            case R.id.disconnectBtn: {
+                disconnect();
+                break;
+            }
+            case R.id.stopScanBtn: {
+                stopScan();
                 break;
             }
             case R.id.minusFrequency: {
@@ -196,5 +282,42 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
                 break;
             }
         }
+    }
+
+    private void connect() {
+        showStopScanView();
+        brainiacManager.startScan();
+    }
+
+    private void disconnect() {
+        brainiacManager.stopScan();
+        brainiacManager.release();
+        showConnectView();
+    }
+
+    private void stopScan() {
+        brainiacManager.stopScan();
+        showConnectView();
+    }
+
+    private void showStopScanView() {
+        connectBtn.setVisibility(View.GONE);
+        disconnectBtn.setVisibility(View.GONE);
+        stopScanBtn.setVisibility(View.VISIBLE);
+        statusLabel.setText(R.string.scanning_started);
+    }
+
+    private void showConnectView() {
+        connectBtn.setVisibility(View.VISIBLE);
+        disconnectBtn.setVisibility(View.GONE);
+        stopScanBtn.setVisibility(View.GONE);
+        statusLabel.setText(R.string.ready_to_scan);
+    }
+
+    private void showDisconnectView() {
+        connectBtn.setVisibility(View.GONE);
+        disconnectBtn.setVisibility(View.VISIBLE);
+        stopScanBtn.setVisibility(View.GONE);
+        statusLabel.setText(R.string.connected);
     }
 }
