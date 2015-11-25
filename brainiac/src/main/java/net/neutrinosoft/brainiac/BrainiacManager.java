@@ -1,16 +1,29 @@
 package net.neutrinosoft.brainiac;
 
 import android.annotation.TargetApi;
-import android.bluetooth.*;
-import android.bluetooth.le.*;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothProfile;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+
 import net.neutrinosoft.brainiac.callback.OnDeviceCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveDataCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveFftDataCallback;
 import net.neutrinosoft.brainiac.callback.OnScanCallback;
+
 import org.jtransforms.fft.DoubleFFT_1D;
 
 import java.util.ArrayList;
@@ -678,4 +691,5 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
             handler.removeCallbacks(testCallback);
         }
     }
+
 }

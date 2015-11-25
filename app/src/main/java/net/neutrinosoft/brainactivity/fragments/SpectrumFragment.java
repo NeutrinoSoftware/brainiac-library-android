@@ -59,12 +59,12 @@ public class SpectrumFragment extends Fragment {
 
         spectrumBroadcastReceiver = new SpectrumBroadcastReceiver();
 
-
         for (int i = 0; i < charts.size(); i++) {
             LineChart chart = charts.get(i);
             chart.setPinchZoom(false);
             chart.setTouchEnabled(false);
             chart.setDoubleTapToZoomEnabled(false);
+
             List<LineDataSet> lineDataSets = new ArrayList<>();
 
             blueEntries.add(new ArrayList<Entry>());

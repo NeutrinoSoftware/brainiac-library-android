@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import net.neutrinosoft.brainactivity.R;
 import net.neutrinosoft.brainiac.BrainiacManager;
 import net.neutrinosoft.brainiac.FftValue;
