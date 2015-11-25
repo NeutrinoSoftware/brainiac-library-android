@@ -222,12 +222,12 @@ public class RawDataFragment extends Fragment {
 
         for (int i = 0; i < charts.size(); i++) {
             final LineChart chart = charts.get(i);
+
             chart.setTouchEnabled(false);
-            chart.setPinchZoom(false);
             chart.setDoubleTapToZoomEnabled(false);
 
-
             entriesList.add(new ArrayList<Entry>());
+
             List<Entry> entryValues = entriesList.get(i);
             LineDataSet lineDataSet = new LineDataSet(entryValues, "");
             lineDataSet.setDrawCircles(false);
@@ -263,7 +263,8 @@ public class RawDataFragment extends Fragment {
             rightAxis.setEnabled(false);
 
             XAxis xAxis = chart.getXAxis();
-            xAxis.setEnabled(false);
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setLabelsToSkip(250);
 
             Legend legend = chart.getLegend();
             legend.setEnabled(false);
@@ -283,21 +284,10 @@ public class RawDataFragment extends Fragment {
         @Override
         public synchronized void onReceive(Context context, Intent intent) {
             Value value = intent.getExtras().getParcelable(MainActivity.EXTRA_VALUES);
-
             if (value != null) {
-
-                if (values.size() > 2048) {
-                    xValuesList.clear();
-                    values.clear();
-                    for (List list : entriesList) {
-                        list.clear();
-                    }
-                }
-
-                xValuesList.add("");
                 values.add(value);
 
-                if ((values.size() % 250) == 0) {
+                if ((values.size() % 5) == 0) {
                     for (int i = 0; i < charts.size(); i++) {
 
                         LineChart chart = charts.get(i);
