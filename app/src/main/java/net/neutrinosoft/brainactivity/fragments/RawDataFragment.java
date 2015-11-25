@@ -222,6 +222,7 @@ public class RawDataFragment extends Fragment {
 
         for (int i = 0; i < charts.size(); i++) {
             final LineChart chart = charts.get(i);
+            chart.setTouchEnabled(false);
             chart.setPinchZoom(false);
             chart.setDoubleTapToZoomEnabled(false);
 
