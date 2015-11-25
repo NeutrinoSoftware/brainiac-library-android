@@ -7,4 +7,5 @@
     <color name="yellow">#EFF100</color>
     <color name="red1">#FF0000</color>
     <color name="red2">#820000</color>
+    <color name="raw_data_plot_color">#303030</color>
 </resources>

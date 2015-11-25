@@ -219,7 +219,6 @@ public class RawDataFragment extends Fragment {
     }
 
     private void initCharts() {
-        int[] colors = new int[]{R.color.green, R.color.yellow, R.color.red1, R.color.red2};
 
         for (int i = 0; i < charts.size(); i++) {
             final LineChart chart = charts.get(i);
@@ -238,7 +237,7 @@ public class RawDataFragment extends Fragment {
                     return "";
                 }
             });
-            lineDataSet.setColor(getResources().getColor(colors[i]));
+            lineDataSet.setColor(getResources().getColor(R.color.raw_data_plot_color));
             LineData lineData = new LineData(xValuesList, lineDataSet);
 
             chart.setDescription("");
