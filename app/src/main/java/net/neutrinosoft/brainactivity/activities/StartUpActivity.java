@@ -11,7 +11,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.otto.Bus;
+
 import net.neutrinosoft.brainactivity.R;
+import net.neutrinosoft.brainactivity.common.BusProvider;
 import net.neutrinosoft.brainiac.BrainiacManager;
 import net.neutrinosoft.brainiac.FftValue;
 import net.neutrinosoft.brainiac.Value;
@@ -174,25 +177,22 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
         plusFrequency.setOnClickListener(this);
         startTest.setOnClickListener(this);
 
-
+        final Bus bus = BusProvider.getBus();
         brainiacManager = BrainiacManager.getBrainiacManager(this);
         brainiacManager.setOnScanCallback(onScanCallback);
         brainiacManager.setOnDeviceCallback(onDeviceCallback);
         brainiacManager.setOnReceiveDataCallback(new OnReceiveDataCallback() {
             @Override
             public void onReceiveData(Value value) {
-                final Intent rawDataIntent = new Intent(ACTION_NEW_VALUE);
-                rawDataIntent.putExtra(MainActivity.EXTRA_VALUES, value);
-                sendBroadcast(rawDataIntent);
+                bus.post(value);
+
             }
         });
 
         brainiacManager.setOnReceiveFftDataCallback(new OnReceiveFftDataCallback() {
             @Override
             public void onReceiveData(FftValue[] fftValues) {
-                final Intent fftDataIntent = new Intent(ACTION_FFT_VALUE);
-                fftDataIntent.putExtra(MainActivity.EXTRA_VALUES, fftValues);
-                sendBroadcast(fftDataIntent);
+                bus.post(fftValues);
             }
         });
 

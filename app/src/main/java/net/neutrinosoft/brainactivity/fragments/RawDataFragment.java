@@ -1,9 +1,5 @@
 package net.neutrinosoft.brainactivity.fragments;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,10 +18,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ValueFormatter;
+import com.squareup.otto.Subscribe;
 
 import net.neutrinosoft.brainactivity.R;
-import net.neutrinosoft.brainactivity.activities.MainActivity;
-import net.neutrinosoft.brainactivity.activities.StartUpActivity;
+import net.neutrinosoft.brainactivity.common.BusProvider;
 import net.neutrinosoft.brainactivity.common.TimeZoom;
 import net.neutrinosoft.brainactivity.common.ValueZoom;
 import net.neutrinosoft.brainiac.Value;
@@ -43,7 +39,7 @@ public class RawDataFragment extends Fragment {
     private Button plusTimeZoom;
     private Button minusValueZoom;
     private Button plusValueZoom;
-
+    private int index;
 
     List<Value> values = new ArrayList<>();
 
@@ -52,7 +48,6 @@ public class RawDataFragment extends Fragment {
     private TimeZoom timeZoom = TimeZoom.Five;
     private ValueZoom valueZoom = ValueZoom.TwoHundred;
 
-    private RawDataBroadcastReceiver rawDataBroadcastReceiver;
 
 
     @Override
@@ -212,10 +207,9 @@ public class RawDataFragment extends Fragment {
         xValuesList = new ArrayList<>();
         entriesList = new ArrayList<>();
 
-        rawDataBroadcastReceiver = new RawDataBroadcastReceiver();
 
         initCharts();
-        getActivity().registerReceiver(rawDataBroadcastReceiver, new IntentFilter(StartUpActivity.ACTION_NEW_VALUE));
+        BusProvider.getBus().register(this);
     }
 
     private void initCharts() {
@@ -276,40 +270,40 @@ public class RawDataFragment extends Fragment {
     public void onDestroy() {
 
         super.onDestroy();
-        getActivity().unregisterReceiver(rawDataBroadcastReceiver);
+        BusProvider.getBus().unregister(this);
     }
 
-    class RawDataBroadcastReceiver extends BroadcastReceiver {
+    @Subscribe
+    public void onDataReceive(Value value) {
+        if (value != null) {
+            values.add(value);
+            index++;
 
-        @Override
-        public synchronized void onReceive(Context context, Intent intent) {
-            Value value = intent.getExtras().getParcelable(MainActivity.EXTRA_VALUES);
-            if (value != null) {
-                values.add(value);
+            if ((values.size() % 5) == 0) {
+                for (int i = 0; i < charts.size(); i++) {
 
-                if ((values.size() % 5) == 0) {
-                    for (int i = 0; i < charts.size(); i++) {
-
-                        LineChart chart = charts.get(i);
-                        List<Entry> entries = entriesList.get(i);
-                        entries.clear();
-                        for (int j = 0; j < values.size(); j++) {
-                            entries.add(new Entry(values.get(j).toFloatArray()[i], j));
-                        }
-                        chart.setVisibleXRange(timeZoom.getZoomValue());
-                        chart.moveViewToX(values.size() - timeZoom.getZoomValue());
-
-                        chart.notifyDataSetChanged();
-                        chart.invalidate();
+                    LineChart chart = charts.get(i);
+                    List<Entry> entries = entriesList.get(i);
+                    if (values.size() > 2000) {
+                        values.remove(0);
+                        entries.remove(0);
                     }
 
-                }
-            }
+                    entries.add(new Entry(values.get(values.size() - 1).toFloatArray()[i], index));
+                    chart.setVisibleXRange(timeZoom.getZoomValue());
+                    chart.moveViewToX(index);
 
-            if (value != null) {
-                Log.d("OrderNumber", String.valueOf(value.getHardwareOrderNumber()));
-                xValuesList.add("");
+                    chart.notifyDataSetChanged();
+                    chart.invalidate();
+                }
+
             }
         }
+
+        if (value != null) {
+            Log.d("OrderNumber", String.valueOf(value.getHardwareOrderNumber()));
+            xValuesList.add("");
+        }
     }
+
 }

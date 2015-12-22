@@ -1,12 +1,7 @@
 package net.neutrinosoft.brainactivity.fragments;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,10 +16,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ValueFormatter;
+import com.squareup.otto.Subscribe;
 
 import net.neutrinosoft.brainactivity.R;
-import net.neutrinosoft.brainactivity.activities.MainActivity;
-import net.neutrinosoft.brainactivity.activities.StartUpActivity;
+import net.neutrinosoft.brainactivity.common.BusProvider;
 import net.neutrinosoft.brainiac.FftValue;
 
 import java.util.ArrayList;
@@ -38,7 +33,6 @@ public class SpectrumFragment extends Fragment {
     private List<List<Entry>> yellowEntries = new ArrayList<>();
     private List<List<Entry>> grayEntries = new ArrayList<>();
 
-    private SpectrumBroadcastReceiver spectrumBroadcastReceiver;
 
     @Nullable
     @Override
@@ -57,7 +51,6 @@ public class SpectrumFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        spectrumBroadcastReceiver = new SpectrumBroadcastReceiver();
 
         for (int i = 0; i < charts.size(); i++) {
             LineChart chart = charts.get(i);
@@ -126,46 +119,43 @@ public class SpectrumFragment extends Fragment {
             Legend legend = chart.getLegend();
             legend.setEnabled(false);
         }
+        BusProvider.getBus().register(this);
 
-        getActivity().registerReceiver(spectrumBroadcastReceiver, new IntentFilter(StartUpActivity.ACTION_FFT_VALUE));
 
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().unregisterReceiver(spectrumBroadcastReceiver);
+        BusProvider.getBus().unregister(this);
 
     }
 
-    class SpectrumBroadcastReceiver extends BroadcastReceiver {
+    @Subscribe
+    public void onDataReceive(FftValue[] fftValues) {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Parcelable[] parcelables = intent.getExtras().getParcelableArray(MainActivity.EXTRA_VALUES);
-            FftValue[] values = FftValue.createFromParcelableArray(parcelables);
+        xValues.add("");
 
-            xValues.add("");
+        for (int i = 0; i < charts.size(); i++) {
 
-            for (int i = 0; i < charts.size(); i++) {
+            List<Entry> blues = blueEntries.get(i);
+            List<Entry> grays = grayEntries.get(i);
+            List<Entry> yellows = yellowEntries.get(i);
 
-                List<Entry> blues = blueEntries.get(i);
-                List<Entry> grays = grayEntries.get(i);
-                List<Entry> yellows = yellowEntries.get(i);
-
-                int xCount = xValues.size() - 1;
-                blues.add(new Entry(values[i].getData1(), xCount));
-                grays.add(new Entry(values[i].getData2(), xCount));
-                yellows.add(new Entry(values[i].getData3(), xCount));
+            int xCount = xValues.size() - 1;
+            blues.add(new Entry(fftValues[i].getData1(), xCount));
+            grays.add(new Entry(fftValues[i].getData2(), xCount));
+            yellows.add(new Entry(fftValues[i].getData3(), xCount));
 
 
-                LineChart chart = charts.get(i);
-                chart.setVisibleXRange(20);
-                chart.moveViewToX(xCount - 1);
+            LineChart chart = charts.get(i);
+            chart.setVisibleXRange(20);
+            chart.moveViewToX(xCount - 1);
 
-                chart.notifyDataSetChanged();
-                chart.invalidate();
-            }
+            chart.notifyDataSetChanged();
+            chart.invalidate();
         }
+
+
     }
 }
