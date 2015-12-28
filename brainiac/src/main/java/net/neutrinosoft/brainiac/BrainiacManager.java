@@ -256,7 +256,9 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         if (onScanCallback != null) {
             onScanCallback.onScanStop();
         }
+        if(bluetoothAdapter!=null) {
             bluetoothAdapter.stopLeScan(this);
+        }
 
     }
 
