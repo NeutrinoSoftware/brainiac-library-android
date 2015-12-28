@@ -267,17 +267,12 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         if (onDeviceCallback != null) {
             onDeviceCallback.onDeviceConnecting(neuroBLE);
         }
-        Log.d("AASASDASDASDBKASJHDKLA", "1");
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 neuroBLE.connectGatt(context, false, BrainiacManager.this);
             }
         });
-
-        Log.d("AASASDASDASDBKASJHDKLA", "2");
-
-
     }
 
 
