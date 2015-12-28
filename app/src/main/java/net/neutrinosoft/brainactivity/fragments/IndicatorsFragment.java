@@ -99,7 +99,7 @@ public class IndicatorsFragment extends Fragment implements View.OnClickListener
         red1.setBackgroundResource(R.color.grey);
         red2.setBackgroundResource(R.color.grey);
 
-        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(getContext());
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(getActivity());
         if (brainiacManager.isConnected()||brainiacManager.isInTestMode()) {
             if (brainiacManager.processGreenChannel(channel)) {
                 green.setBackgroundResource(R.color.green);

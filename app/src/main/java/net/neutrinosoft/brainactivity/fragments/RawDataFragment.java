@@ -1,6 +1,7 @@
 package net.neutrinosoft.brainactivity.fragments;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -43,16 +44,28 @@ public class RawDataFragment extends Fragment {
 
     List<Value> values = new ArrayList<>();
 
-    List<String> xValuesList;
-    List<List<Entry>> entriesList;
+    List<String> xValuesList = new ArrayList<>();
+    List<List<Entry>> entriesList = new ArrayList<>();
     private TimeZoom timeZoom = TimeZoom.Five;
     private ValueZoom valueZoom = ValueZoom.TwoHundred;
 
-
+    private Handler handler;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        for (int i = 0; i < 4; i++) {
+            entriesList.add(new ArrayList<Entry>());
+        }
+        for (int i = 0; i < 2000; i++) {
+            values.add(new Value());
+            xValuesList.add("");
+            for (int j = 0; j < 4; j++) {
+                List<Entry> list = entriesList.get(j);
+                list.add(new Entry(values.get(values.size() - 1).toFloatArray()[j], index));
+            }
+            index++;
+        }
     }
 
     @Nullable
@@ -203,11 +216,6 @@ public class RawDataFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        xValuesList = new ArrayList<>();
-        entriesList = new ArrayList<>();
-
-
         initCharts();
         BusProvider.getBus().register(this);
     }
@@ -220,12 +228,10 @@ public class RawDataFragment extends Fragment {
             chart.setTouchEnabled(false);
             chart.setDoubleTapToZoomEnabled(false);
 
-            entriesList.add(new ArrayList<Entry>());
 
             List<Entry> entryValues = entriesList.get(i);
             LineDataSet lineDataSet = new LineDataSet(entryValues, "");
             lineDataSet.setDrawCircles(false);
-            lineDataSet.setDrawCubic(true);
             lineDataSet.setValueFormatter(new ValueFormatter() {
                 @Override
                 public String getFormattedValue(float value) {
@@ -275,6 +281,9 @@ public class RawDataFragment extends Fragment {
 
     @Subscribe
     public void onDataReceive(Value value) {
+        if (handler == null) {
+            handler = new Handler();
+        }
         if (value != null) {
             values.add(value);
             index++;

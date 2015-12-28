@@ -183,16 +183,26 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
         brainiacManager.setOnDeviceCallback(onDeviceCallback);
         brainiacManager.setOnReceiveDataCallback(new OnReceiveDataCallback() {
             @Override
-            public void onReceiveData(Value value) {
-                bus.post(value);
+            public void onReceiveData(final Value value) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bus.post(value);
+                    }
+                });
 
             }
         });
 
         brainiacManager.setOnReceiveFftDataCallback(new OnReceiveFftDataCallback() {
             @Override
-            public void onReceiveData(FftValue[] fftValues) {
-                bus.post(fftValues);
+            public void onReceiveData(final FftValue[] fftValues) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bus.post(fftValues);
+                    }
+                });
             }
         });
 
