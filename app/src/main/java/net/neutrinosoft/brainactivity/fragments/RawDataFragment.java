@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.utils.ValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.formatter.YAxisValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.squareup.otto.Subscribe;
 
 import net.neutrinosoft.brainactivity.R;
@@ -102,7 +105,7 @@ public class RawDataFragment extends Fragment {
                 }
                 timeZoomLabel.setText(timeZoom.getLabel());
                 for (LineChart lineChart : charts) {
-                    lineChart.setVisibleXRange(timeZoom.getZoomValue());
+                    lineChart.setVisibleXRange(timeZoom.getZoomValue(), timeZoom.getZoomValue());
                     lineChart.invalidate();
 
                 }
@@ -131,7 +134,7 @@ public class RawDataFragment extends Fragment {
                 }
                 timeZoomLabel.setText(timeZoom.getLabel());
                 for (LineChart lineChart : charts) {
-                    lineChart.setVisibleXRange(timeZoom.getZoomValue());
+                    lineChart.setVisibleXRange(timeZoom.getZoomValue(), timeZoom.getZoomValue());
                     lineChart.invalidate();
                 }
 
@@ -234,27 +237,26 @@ public class RawDataFragment extends Fragment {
             lineDataSet.setDrawCircles(false);
             lineDataSet.setValueFormatter(new ValueFormatter() {
                 @Override
-                public String getFormattedValue(float value) {
+                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
                     return "";
                 }
             });
-            lineDataSet.setColor(getResources().getColor(R.color.raw_data_plot_color));
+            lineDataSet.setColor(ContextCompat.getColor(getActivity(), R.color.raw_data_plot_color));
             LineData lineData = new LineData(xValuesList, lineDataSet);
 
             chart.setDescription("");
             chart.setData(lineData);
-            chart.setGridBackgroundColor(getResources().getColor(R.color.white));
-            chart.setVisibleXRange(timeZoom.getZoomValue());
+            chart.setGridBackgroundColor(ContextCompat.getColor(getActivity(), R.color.white));
+            chart.setVisibleXRange(timeZoom.getZoomValue(), timeZoom.getZoomValue());
 
             YAxis leftAxis = chart.getAxisLeft();
-            leftAxis.setLabelCount(0);
-            leftAxis.setValueFormatter(new ValueFormatter() {
+            leftAxis.setLabelCount(0, true);
+            leftAxis.setValueFormatter(new YAxisValueFormatter() {
                 @Override
-                public String getFormattedValue(float value) {
+                public String getFormattedValue(float value, YAxis yAxis) {
                     return "";
                 }
             });
-            leftAxis.setStartAtZero(false);
 
             leftAxis.setAxisMinValue(-200000);
             leftAxis.setAxisMaxValue(200000);
@@ -299,7 +301,7 @@ public class RawDataFragment extends Fragment {
                     }
 
                     entries.add(new Entry(values.get(values.size() - 1).toFloatArray()[i], index));
-                    chart.setVisibleXRange(timeZoom.getZoomValue());
+                    chart.setVisibleXRange(timeZoom.getZoomValue(), timeZoom.getZoomValue());
                     chart.moveViewToX(index);
 
                     chart.notifyDataSetChanged();
