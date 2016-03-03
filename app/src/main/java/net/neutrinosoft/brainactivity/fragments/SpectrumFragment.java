@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.utils.ValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.squareup.otto.Subscribe;
 
 import net.neutrinosoft.brainactivity.R;
@@ -58,14 +61,14 @@ public class SpectrumFragment extends Fragment {
             chart.setTouchEnabled(false);
             chart.setDoubleTapToZoomEnabled(false);
 
-            List<LineDataSet> lineDataSets = new ArrayList<>();
+            List<ILineDataSet> lineDataSets = new ArrayList<>();
 
             blueEntries.add(new ArrayList<Entry>());
             LineDataSet blue = new LineDataSet(blueEntries.get(i), "");
             blue.setDrawCircles(false);
             blue.setValueFormatter(new ValueFormatter() {
                 @Override
-                public String getFormattedValue(float value) {
+                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
                     return "";
                 }
             });
@@ -77,7 +80,7 @@ public class SpectrumFragment extends Fragment {
             gray.setDrawCircles(false);
             gray.setValueFormatter(new ValueFormatter() {
                 @Override
-                public String getFormattedValue(float value) {
+                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
                     return "";
                 }
             });
@@ -90,7 +93,7 @@ public class SpectrumFragment extends Fragment {
             yellow.setDrawCircles(false);
             yellow.setValueFormatter(new ValueFormatter() {
                 @Override
-                public String getFormattedValue(float value) {
+                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
                     return "";
                 }
             });
@@ -102,11 +105,10 @@ public class SpectrumFragment extends Fragment {
 
             chart.setDescription("");
             chart.setData(lineData);
-            chart.setGridBackgroundColor(getResources().getColor(R.color.white));
+            chart.setGridBackgroundColor(ContextCompat.getColor(getActivity(), R.color.white));
 
             YAxis leftAxis = chart.getAxisLeft();
-            leftAxis.setLabelCount(5);
-            leftAxis.setStartAtZero(false);
+            leftAxis.setLabelCount(5, true);
             leftAxis.setAxisMinValue(0);
             leftAxis.setAxisMaxValue(25);
 
@@ -149,7 +151,7 @@ public class SpectrumFragment extends Fragment {
 
 
             LineChart chart = charts.get(i);
-            chart.setVisibleXRange(20);
+            chart.setVisibleXRange(20, 20);
             chart.moveViewToX(xCount - 1);
 
             chart.notifyDataSetChanged();
