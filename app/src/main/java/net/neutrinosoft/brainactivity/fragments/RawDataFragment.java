@@ -257,7 +257,6 @@ public class RawDataFragment extends Fragment {
                     return "";
                 }
             });
-            //leftAxis.setStartAtZero(false);
 
             leftAxis.setAxisMinValue(-200000);
             leftAxis.setAxisMaxValue(200000);
