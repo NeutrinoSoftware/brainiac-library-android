@@ -10,12 +10,14 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import net.neutrinosoft.brainiac.callback.OnDeviceCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveDataCallback;
@@ -221,7 +223,24 @@ public class BrainiacManager extends BluetoothGattCallback {
             if (!(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
                     context.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_COARSE_LOCATION);
+                    new ActivityCompat.OnRequestPermissionsResultCallback() {
+                        @Override
+                        public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+                            switch (requestCode) {
+                                case PERMISSION_COARSE_LOCATION: {
+                                    if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                                        Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        scanDevices();
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    };
                 }
+            } else {
+                scanDevices();
             }
         } else {
             bluetoothAdapter.startLeScan(new BluetoothAdapter.LeScanCallback() {
@@ -233,26 +252,16 @@ public class BrainiacManager extends BluetoothGattCallback {
         }
     }
 
-    /*@Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_LOCATION: {
-                if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show();
-                } else {
-                    BluetoothLeScanner scanner = bluetoothAdapter.getBluetoothLeScanner();
-                    scanner.startScan(new ScanCallback() {
-                        @Override
-                        public void onScanResult(int callbackType, ScanResult result) {
-                            BluetoothDevice device = result.getDevice();
-                            onLeScanDevice(device);
-                    }
-            });
-                }
-                break;
+    private void scanDevices() {
+        BluetoothLeScanner scanner = bluetoothAdapter.getBluetoothLeScanner();
+        scanner.startScan(new ScanCallback() {
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                BluetoothDevice device = result.getDevice();
+                onLeScanDevice(device);
             }
-        }
-    }*/
+        });
+    }
 
     /**
      * Indicates whether BrainiacManager connected to device.
@@ -272,7 +281,7 @@ public class BrainiacManager extends BluetoothGattCallback {
         return isTestMode;
     }
 
-    private final void onLeScanDevice(BluetoothDevice bluetoothDevice) {
+    private void onLeScanDevice(BluetoothDevice bluetoothDevice) {
         Log.d(TAG, "onLeScan()");
         Log.d(TAG, bluetoothDevice.getName());
         Log.d(TAG, bluetoothDevice.getAddress());
