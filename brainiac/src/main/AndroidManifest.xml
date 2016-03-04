@@ -1,12 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="net.neutrinosoft.brainiac">
+    package="net.neutrinosoft.brainiac">
 
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <application android:allowBackup="true"
-                 android:label="@string/app_name"
-        >
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name">
 
     </application>
 
