@@ -1,4 +1,3 @@
 <resources>
     <string name="app_name">Brainiac</string>
-    <string name="permission_denied">Permission denied</string>
 </resources>
