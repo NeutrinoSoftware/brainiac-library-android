@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
-import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
@@ -17,6 +16,7 @@ import net.neutrinosoft.brainiac.callback.OnDeviceCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveDataCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveFftDataCallback;
 import net.neutrinosoft.brainiac.callback.OnScanCallback;
+import net.neutrinosoft.brainiac.common.ManagerActivityZone;
 
 import org.jtransforms.fft.DoubleFFT_1D;
 
@@ -71,6 +71,15 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     private final static String TRANSFER_CHARACTERISTIC_UUID = "6E400002-B534-f393-67a9-e50e24dcca9e";
     private final static String BATTERY_LEVEL_CHARACTERISTIC_UUID = "00000000-0000-0000-0000-000000000000";
 
+    private boolean hasStartedIndicators = false;
+    private boolean hasStartedProcessBasicValues = false;
+    private final int INDICATOR_PERIOD = 5;
+    private final int BASIC_VALUES_PERIOD = 10;
+    double averageBasicTeta;
+    Double[] averageBasicAlpha;
+    Double[] averageBasicBeta;
+    List<XYValue> basicValues;
+
 
     /**
      * Register a callback to be invoked when fft data received.
@@ -115,6 +124,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     private BrainiacManager(Activity context) {
         this.context = context;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        basicValues = new ArrayList<>();
     }
 
     /**
@@ -664,6 +674,237 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
             isTestMode = false;
             handler.removeCallbacks(testCallback);
         }
+    }
+
+    private void startProcessAverageValues() {
+        startIndicatorsProcessing();
+        hasStartedProcessBasicValues = true;
+    }
+
+    private void startIndicatorsProcessing() {
+        List<Double[]> averages1 = defineBasicAverageValuesForRange(BASIC_VALUES_PERIOD, 1);
+
+        if (averages1 == null) {
+            return;
+        }
+
+        averageBasicAlpha = averages1.get(0);
+        averageBasicBeta = averages1.get(1);
+
+        fillStartXYValues();
+
+        hasStartedIndicators = true;
+    }
+
+    private List<Double[]> defineBasicAverageValuesForRange(int range, int channel) {
+        List<Double[]> averages = new ArrayList<>();
+        /*if (values.size() > range) {
+            double alpha2 = 0, alpha4 = 0;
+            double beta1 = 0, beta3 = 0;
+            for(int i = (values.size() - range); i < values.size(); i++) {
+                beta1 += values.get(i).getChannel1();
+                alpha2 += values.get(i).getChannel2();
+                beta3 += values.get(i).getChannel3();
+                alpha4 += values.get(i).getChannel4();
+            }
+            double averageBeta1 = beta1 / values.size();
+            double averageAlpha2 = alpha2 / values.size();
+            double averageBeta3 = beta3 / values.size();
+            double averageAlpha4 = alpha4 / values.size();
+            averages[0] = ((averageAlpha2 + averageAlpha4) / 2);
+            averages[1] = ((averageBeta1 + averageBeta3) / 2);
+            return averages;
+        }*/
+        return null;
+    }
+
+    private List<String> processColorIndicators(double[] averages, int channel) {
+        double X = averages[0];
+        double Y = averages[1];
+
+        XYValue basics = basicValues.get(channel - 1);
+        double X0 = basics.getX0();
+        double Y0 = basics.getY0();
+        Log.d(TAG, "X = " + X + "  Y = " + Y + ", X0 = " + X0 + "  Y0 = " + Y0);
+        List<String> colors = new ArrayList<>();
+
+        if((0.7 * X0 <= X && X <= 1.3 * X0 && 0 <= Y && Y <= 1.25 * Y0) || (1.3 * X0 < X && X <= 1.6 * X0 && Y0 <= Y && Y < 1.25 * Y0) || ( X > 1.6 * X0 && Y > Y0) || (0 < X && X <= 0.7 * X0 && Y0 > Y && Y > 0.75 * Y0))
+        {
+            colors.add("green");
+        }
+        if(((1.3 * X0) < X && X <= (1.6 * X0) && 0 < Y && Y <= Y0) || ( 0 < X && X <= (0.7 * X0) && 0 < Y && Y <= (0.75 * Y0)))
+        {
+            colors.add("yellow");
+
+        }
+        if((0 < X && X <= 0.7 * X0 && Y0 < Y) || (1.3 * X0 < X && X <= 1.6 * X0 && Y >= 1.25 * Y0))
+        {
+            colors.add("red");
+
+        }
+        if(X > 1.6 * X0 && 0.75 * 0 < Y && Y <= Y0)
+        {
+            colors.add("orange");
+
+        }
+
+        return colors;
+    }
+
+    private UserActivity processXYValues(double[] averages, int channel) {
+        double X = averages[0];
+        double Y = averages[1];
+
+        XYValue basics = basicValues.get(channel - 1);
+        double X0 = basics.getX0();
+        double Y0 = basics.getY0();
+        double X1p = basics.getX1p();
+        double X1m = basics.getX1m();
+        double Y1p = basics.getX1p();
+        double Y1m = basics.getY1m();
+        double X2p = basics.getX2p();
+        double X2m = basics.getX2m();
+        double Y2p = basics.getY2p();
+        double Y2m = basics.getY2m();
+        double X3p = basics.getX3p();
+        double X3m = basics.getX3m();
+        double Y3p = basics.getY3p();
+        double Y3m = basics.getY3m();
+        double X4p = basics.getX4p();
+        double X4m = basics.getX4m();
+        double Y4p = basics.getY4p();
+        double Y4m = basics.getY4m();
+
+        ManagerActivityZone activityZone = ManagerActivityZone.NormalActivity;
+        double percent = 1.0;
+        if(X > X0)
+        {
+            //positive values
+            if(X1p >= X && X > X0 && Y >= Y0)
+            {
+                activityZone = ManagerActivityZone.Relaxation;
+                percent = 0.25;
+            }
+            if(X1p >= X && X > X0 && Y >= Y1p && Y0 >= Y)
+            {
+                activityZone = ManagerActivityZone.Relaxation;
+                percent = 0.5;
+            }
+            if(X1p >= X && X > X0 && Y1p >= Y)
+            {
+                activityZone = ManagerActivityZone.Relaxation;
+                percent = 0.75;
+            }
+            if(X2p >= X && X > X1p && Y0 >= Y && Y >= Y2p)
+            {
+                activityZone = ManagerActivityZone.Relaxation;
+                percent = 1;
+            }
+            if(X3p >= X && X > X2p && Y >= Y0)
+            {
+                activityZone = ManagerActivityZone.HighRelaxation;
+                percent = 0.25;
+            }
+            if(X3p >= X && X > X2p && Y0 >= Y && Y >= Y3p)
+            {
+                activityZone = ManagerActivityZone.HighRelaxation;
+                percent = 0.5;
+            }
+            if(X3p >= X && X > X2p && Y3p >= Y)
+            {
+                activityZone = ManagerActivityZone.HighRelaxation;
+                percent = 0.75;
+            }
+            if(X4p >= X && X > X3p && Y0 >= Y && Y >= Y4p)
+            {
+                activityZone = ManagerActivityZone.HighRelaxation;
+                percent = 1;
+            }
+            if(X >= X4p)
+            {
+                activityZone = ManagerActivityZone.Dream;
+                percent = 0.5;
+            }
+
+        }
+        else
+        {
+            //negative values
+            if(X1m < X && X <= X0 && Y < Y0)
+            {
+                activityZone = ManagerActivityZone.NormalActivity;
+                percent = 0.25;
+            }
+            if(X1m < X && X <= X0 && Y0 <= Y && Y <= Y1m)
+            {
+                activityZone = ManagerActivityZone.NormalActivity;
+                percent = 0.5;
+            }
+            if(X1m < X && X <= X0 && Y1m < Y)
+            {
+                activityZone = ManagerActivityZone.NormalActivity;
+                percent = 0.75;
+            }
+            if(X2m < X && X <= X1m && Y0 < Y && Y <= Y2m)
+            {
+                activityZone = ManagerActivityZone.NormalActivity;
+                percent = 1;
+            }
+            if(X3m < X && X <= X2m && Y < Y0)
+            {
+                activityZone = ManagerActivityZone.Agitation;
+                percent = 0.25;
+            }
+            if(X3m < X && X <= X2m && Y0 < Y && Y <= Y3m)
+            {
+                activityZone = ManagerActivityZone.Agitation;
+                percent = 0.5;
+            }
+            if(X3m < X && X <= X2m && Y3m < Y)
+            {
+                activityZone = ManagerActivityZone.Agitation;
+                percent = 0.75;
+            }
+            if(X4m < X && X <= X3m && Y0 < Y && Y <= Y4m)
+            {
+                activityZone = ManagerActivityZone.Agitation;
+                percent = 1;
+            }
+            if(0 < X && X < 0.1 * X0)
+            {
+                activityZone = ManagerActivityZone.HighAgitation;
+                percent = 0.5;
+            }
+        }
+        return new UserActivity(activityZone, percent);
+    }
+
+    void fillStartXYValues()
+    {
+        for(int i = 0; i < 1; i++)
+        {
+            double X0 = averageBasicAlpha[i];
+            double Y0 = averageBasicBeta[i];
+            double X1p = 1.3 * X0;
+            double X1m = 0.65 * (X0 - 0.1 * X0);
+            double Y1p = 0.9 * Y0;
+            double Y1m = 1.1 * Y0;
+            double X2p = 1.45 * X0;
+            double X2m = 0.45 * (X0 - 0.1 * X0);
+            double Y2p = 0.85 * Y0;
+            double Y2m = 1.15 * Y0;
+            double X3p = 1.55 * X0;
+            double X3m = 0.2 * (X0 - 0.1 * X0);
+            double Y3p = 0.8 * Y0;
+            double Y3m = 1.25 * Y0;
+            double X4p = 1.7 * X0;
+            double X4m = (X0 - 0.1 * X0);
+            double Y4p = 0.7 * Y0;
+            double Y4m = 1.3 * Y0;
+
+            basicValues.add(new XYValue((i+1), X0, Y0, X1p, X1m, Y1p, Y1m, X2p, X2m, Y2p, Y2m, X3p, X3m, Y3p, Y3m, X4p, X4m, Y4p, Y4m));
+        }
+
     }
 
 }
