@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import net.neutrinosoft.brainiac.callback.OnDeviceCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveDataCallback;
@@ -65,8 +66,8 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     private final static double RED_2_FLAG = 0.3;
     private final static double RED_1_DIFF_HIGH = RED_1_FLAG / (TIMESPAN / STEP);
     private final static double RED_2_DIFF_HIGH = RED_2_FLAG / (TIMESPAN / STEP);
-    private Handler handler;
-    private Runnable testCallback;
+    private Handler handler, indicatorsHandler;
+    private Runnable testCallback, indicatorsCallBack;
 
     private final static String TRANSFER_CHARACTERISTIC_UUID = "6E400002-B534-f393-67a9-e50e24dcca9e";
     private final static String BATTERY_LEVEL_CHARACTERISTIC_UUID = "00000000-0000-0000-0000-000000000000";
@@ -76,8 +77,8 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     private final int INDICATOR_PERIOD = 5;
     private final int BASIC_VALUES_PERIOD = 10;
     double averageBasicTeta;
-    Double[] averageBasicAlpha;
-    Double[] averageBasicBeta;
+    double averageBasicAlpha;
+    double averageBasicBeta;
     List<XYValue> basicValues;
 
 
@@ -405,7 +406,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
      * @param channel Number for processing channel (0-3)
      * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
      */
-    public boolean processGreenChannel(int channel) {
+    /*public boolean processGreenChannel(int channel) {
         int length = BrainiacManager.fftValues.size();
         ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
 
@@ -432,7 +433,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         lastGreenValue = length;
 
         return true;
-    }
+    }*/
 
     /**
      * Returns flag which define the state of examined man detecting if the state of brain activity is
@@ -443,7 +444,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
      * @param channel Number for processing channel (0-3)
      * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
      */
-    public boolean processYellowForChannel(int channel) {
+    /*public boolean processYellowForChannel(int channel) {
         int length = fftValues.size();
         ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
 
@@ -488,7 +489,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         }
 
         return false;
-    }
+    }*/
 
     /**
      * Returns flag which define the state of examined man detecting if the state of brain activity is Excessive stimulation of neurons and therefore
@@ -498,7 +499,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
      * @param channel Number for processing channel (0-3)
      * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
      */
-    public boolean processRed1ForChannel(int channel) {
+    /*public boolean processRed1ForChannel(int channel) {
         int length = fftValues.size();
         ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
 
@@ -539,7 +540,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         return false;
 
 
-    }
+    }*/
 
     /**
      * Returns flag which define the state of examined man detecting if the state of brain activity is in super relaxation.
@@ -548,7 +549,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
      * @param channel Number for processing channel (0-3)
      * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
      */
-    public boolean processRed2ForChannel(int channel) {
+    /*public boolean processRed2ForChannel(int channel) {
         int length = fftValues.size();
         ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
 
@@ -587,7 +588,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         }
 
         return false;
-    }
+    }*/
 
 
     private static int average(List<Integer> list) {
@@ -676,53 +677,110 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         }
     }
 
-    private void startProcessAverageValues() {
-        startIndicatorsProcessing();
-        hasStartedProcessBasicValues = true;
+    public void enableIndicators() {
+        indicatorsHandler = new Handler();
+        indicatorsCallBack = new Runnable() {
+            @Override
+            public void run() {
+                startIndicatorsProcessing();
+                indicatorsHandler.postDelayed(this, 10000);
+            }
+        };
+        indicatorsHandler.postDelayed(indicatorsCallBack, 10000);
+        //startIndicatorsProcessing();
+        //hasStartedProcessBasicValues = true;
+    }
+
+    public void disableIndicators() {
+        indicatorsHandler.removeCallbacks(indicatorsCallBack);
     }
 
     private void startIndicatorsProcessing() {
-        List<Double[]> averages1 = defineBasicAverageValuesForRange(BASIC_VALUES_PERIOD, 1);
+        double[] averages = defineBasicAverageValuesForRange(BASIC_VALUES_PERIOD);
 
-        if (averages1 == null) {
+        if (averages == null) {
             return;
         }
 
-        averageBasicAlpha = averages1.get(0);
-        averageBasicBeta = averages1.get(1);
+        averageBasicAlpha = averages[0];
+        averageBasicBeta = averages[1];
 
         fillStartXYValues();
 
         hasStartedIndicators = true;
     }
 
-    private List<Double[]> defineBasicAverageValuesForRange(int range, int channel) {
-        List<Double[]> averages = new ArrayList<>();
-        /*if (values.size() > range) {
-            double alpha2 = 0, alpha4 = 0;
-            double beta1 = 0, beta3 = 0;
-            for(int i = (values.size() - range); i < values.size(); i++) {
-                beta1 += values.get(i).getChannel1();
-                alpha2 += values.get(i).getChannel2();
-                beta3 += values.get(i).getChannel3();
-                alpha4 += values.get(i).getChannel4();
+    private double[] defineBasicAverageValuesForRange(int range) {
+        double[] averages = new double[2];
+        if (fftValues.size() > range) {
+            List<Integer> alpha2 = new ArrayList<>();
+            for (int i = (fftValues.size() - range); i < fftValues.size(); i++) {
+                if (fftValues.get(i)[1].getCounter() == 0) {
+                    return null;
+                }
+                alpha2.add(fftValues.get(i)[1].getData2());
+                Log.d(TAG, "alpha " + fftValues.get(i)[1].getData2());
             }
-            double averageBeta1 = beta1 / values.size();
-            double averageAlpha2 = alpha2 / values.size();
-            double averageBeta3 = beta3 / values.size();
-            double averageAlpha4 = alpha4 / values.size();
-            averages[0] = ((averageAlpha2 + averageAlpha4) / 2);
-            averages[1] = ((averageBeta1 + averageBeta3) / 2);
-            return averages;
-        }*/
+
+            List<Integer> alpha4 = new ArrayList<>();
+            for (int i = (fftValues.size() - range); i < fftValues.size(); i++) {
+                if (fftValues.get(i)[3].getCounter() == 0) {
+                    return null;
+                }
+                alpha4.add(fftValues.get(i)[3].getData2());
+                Log.d(TAG, "alpha " + fftValues.get(i)[3].getData2());
+            }
+
+            List<Integer> beta1 = new ArrayList<>();
+            for (int i = (fftValues.size() - range); i < fftValues.size(); i++) {
+                if (fftValues.get(i)[0].getCounter() == 0) {
+                    return null;
+                }
+                beta1.add(fftValues.get(i)[0].getData3());
+                Log.d(TAG, "beta " + fftValues.get(i)[0].getData3());
+            }
+
+            List<Integer> beta3 = new ArrayList<>();
+            for (int i = (fftValues.size() - range); i < fftValues.size(); i++) {
+                if (fftValues.get(i)[2].getCounter() == 0) {
+                    return null;
+                }
+                beta3.add(fftValues.get(i)[2].getData3());
+                Log.d(TAG, "beta " + fftValues.get(i)[2].getData3());
+            }
+
+            double averageAlpha2 = getArrayAverage(alpha2);
+            double averageAlpha4 = getArrayAverage(alpha4);
+            double averageBeta1 = getArrayAverage(beta1);
+            double averageBeta3 = getArrayAverage(beta3);
+            averages[0] = (averageAlpha2 + averageAlpha4) / 2;
+            averages[1] = (averageBeta1 + averageBeta3) / 2;
+        }
         return null;
     }
 
-    private List<String> processColorIndicators(double[] averages, int channel) {
+    private double getArrayAverage(List<Integer> array) {
+        double sum = 0;
+        for (int elem: array){
+            sum += elem;
+        }
+        return sum/array.size();
+    }
+
+    public IndicatorsState getIndicatorsState() {
+        double[] averages = defineBasicAverageValuesForRange(INDICATOR_PERIOD);
+
+        if (averages == null) {
+            return null;
+        }
+        return new IndicatorsState(processXYValues(averages), processColorIndicators(averages));
+    }
+
+    private List<String> processColorIndicators(double[] averages) {
         double X = averages[0];
         double Y = averages[1];
 
-        XYValue basics = basicValues.get(channel - 1);
+        XYValue basics = basicValues.get(0);
         double X0 = basics.getX0();
         double Y0 = basics.getY0();
         Log.d(TAG, "X = " + X + "  Y = " + Y + ", X0 = " + X0 + "  Y0 = " + Y0);
@@ -751,11 +809,11 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         return colors;
     }
 
-    private UserActivity processXYValues(double[] averages, int channel) {
+    private UserActivity processXYValues(double[] averages) {
         double X = averages[0];
         double Y = averages[1];
 
-        XYValue basics = basicValues.get(channel - 1);
+        XYValue basics = basicValues.get(0);
         double X0 = basics.getX0();
         double Y0 = basics.getY0();
         double X1p = basics.getX1p();
@@ -883,8 +941,12 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     {
         for(int i = 0; i < 1; i++)
         {
-            double X0 = averageBasicAlpha[i];
-            double Y0 = averageBasicBeta[i];
+            double X0 = 0;
+            double Y0 = 0;
+            if (i == 0) {
+                X0 = averageBasicAlpha;
+                Y0 = averageBasicBeta;
+            }
             double X1p = 1.3 * X0;
             double X1m = 0.65 * (X0 - 0.1 * X0);
             double Y1p = 0.9 * Y0;

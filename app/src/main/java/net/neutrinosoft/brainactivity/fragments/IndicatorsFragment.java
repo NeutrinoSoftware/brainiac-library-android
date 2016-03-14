@@ -8,8 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.squareup.otto.Subscribe;
+
 import net.neutrinosoft.brainactivity.R;
+import net.neutrinosoft.brainactivity.common.BusProvider;
 import net.neutrinosoft.brainiac.BrainiacManager;
+import net.neutrinosoft.brainiac.IndicatorsState;
 
 public class IndicatorsFragment extends Fragment implements View.OnClickListener {
 
@@ -22,6 +26,7 @@ public class IndicatorsFragment extends Fragment implements View.OnClickListener
     private View red1;
     private View red2;
     private int channel;
+    BrainiacManager brainiacManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,13 +56,15 @@ public class IndicatorsFragment extends Fragment implements View.OnClickListener
         red1 = view.findViewById(R.id.red1);
         red2 = view.findViewById(R.id.red2);
 
+        BusProvider.getBus().register(this);
+
         return view;
     }
 
 
     @Override
     public void onClick(View v) {
-        t3.setEnabled(v.getId() != R.id.t3);
+        /*t3.setEnabled(v.getId() != R.id.t3);
         o1.setEnabled(v.getId() != R.id.o1);
         t4.setEnabled(v.getId() != R.id.t4);
         o2.setEnabled(v.getId() != R.id.o2);
@@ -84,22 +91,23 @@ public class IndicatorsFragment extends Fragment implements View.OnClickListener
             }
         }
 
-        updateIndicators();
+        updateIndicators();*/
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        updateIndicators();
+        brainiacManager = BrainiacManager.getBrainiacManager(getActivity());
+        brainiacManager.enableIndicators();
+        //updateIndicators();
     }
 
-    private void updateIndicators() {
+    /*private void updateIndicators() {
         green.setBackgroundResource(R.color.grey);
         yellow.setBackgroundResource(R.color.grey);
         red1.setBackgroundResource(R.color.grey);
         red2.setBackgroundResource(R.color.grey);
 
-        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(getActivity());
         if (brainiacManager.isConnected()||brainiacManager.isInTestMode()) {
             if (brainiacManager.processGreenChannel(channel)) {
                 green.setBackgroundResource(R.color.green);
@@ -115,6 +123,22 @@ public class IndicatorsFragment extends Fragment implements View.OnClickListener
             }
         }
 
+    }*/
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        brainiacManager.disableIndicators();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        BusProvider.getBus().unregister(this);
+    }
+
+    @Subscribe
+    public void onIndicatorsUpdated(IndicatorsState indicatorsState) {
 
     }
 }
