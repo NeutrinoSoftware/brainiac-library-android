@@ -248,11 +248,12 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
 
     @Override
     public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanRecord) {
+        String deviceName = bluetoothDevice.getName();
         Log.d(TAG, "onLeScan()");
-        Log.d(TAG, bluetoothDevice.getName());
+        Log.d(TAG, deviceName);
         Log.d(TAG, bluetoothDevice.getAddress());
         Log.d(TAG, Arrays.toString(bluetoothDevice.getUuids()));
-        if (DEVICE_NAME.equals(bluetoothDevice.getName())) {
+        if (DEVICE_NAME.equals(deviceName)) {
             this.neuroBLE = bluetoothDevice;
             if (onDeviceCallback != null) {
                 onDeviceCallback.onDeviceFound(bluetoothDevice);
