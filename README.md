@@ -10,17 +10,18 @@ Android 4.3+
 
 # Getting started
 
-1. Import library module to your android project.
+1. Install.
 2. Initialize BrainiacManager.
 3. Set OnReceiveDataCallback.
 4. Set OnFftDataCallback.
 5. Connect to accessory
 
-## 1. Import library module to your android project.
+## 1. Inastall.
 
-1. Download source from GitHub.
-2. Open your project.
-3. Use File->New->Import Module and choose brainiac library.
+Gradle: 
+```groovy
+compile 'net.neutrinosoft.brainiac:brainiac:0.3'
+```
 
 ## 2. Initialize BrainiacManager.
 ```java
