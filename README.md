@@ -16,7 +16,7 @@ Android 4.3+
 4. Set OnFftDataCallback.
 5. Connect to accessory
 
-## 1. Inastall.
+## 1. Install.
 
 Gradle: 
 ```groovy
