@@ -444,7 +444,7 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
 
     /**
      * Returns flag which define the state of examined man detecting if the state of brain activity is
-     * Relaxation brain activity (EEG spectrum for simply “nice” relaxation, during which the person can not adequately drive or write software).
+     * Relaxation brain activity (EEG spectrum for simply "nice" relaxation, during which the person can not adequately drive or write software).
      * Defined as: the dominant frequency in the range of alpha (7-13 Hz) increases in amplitude (power spectrum) on greater than 20% but
      * less than 30% within 3 minutes.
      *
