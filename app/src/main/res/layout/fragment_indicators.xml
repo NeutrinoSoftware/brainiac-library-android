@@ -1,45 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Start" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/t3"
-            style="@style/button"
+        <RelativeLayout
+            android:id="@+id/rlSleep"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="T3"/>
+            android:layout_height="match_parent">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="Sleep"
+                android:textSize="11sp" />
 
-        <Button
-            android:id="@+id/t4"
-            style="@style/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="T4"/>
-        <Button
-            android:id="@+id/o1"
-            style="@style/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="O1"/>
+        </RelativeLayout>
 
-        <Button
-            android:id="@+id/o2"
-            style="@style/button"
+        <RelativeLayout
+            android:id="@+id/rlDeepRelaxation"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="O2"/>
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="Deep\nrelaxation"
+                android:textSize="11sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlRelaxation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="Relaxation"
+                android:textSize="11sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlNormalActivation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="Normal\nactivation"
+                android:textSize="11sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlExcitement"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="Excitement"
+                android:textSize="11sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlDeepExcitement"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="Deep\nexcitement"
+                android:textSize="11sp" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
@@ -68,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/green"
                     android:textColor="@color/white"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
@@ -101,7 +181,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/yellow"
                     android:textColor="@color/white"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
@@ -134,7 +214,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/red1"
                     android:textColor="@color/white"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
@@ -167,7 +247,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/red2"
                     android:textColor="@color/white"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
 
             </LinearLayout>
 

@@ -1,7 +1,6 @@
 package net.neutrinosoft.brainiac;
 
-public class XYValue {
-    private Integer channel;
+public class BasicValues {
     private Double X0;
     private Double Y0;
     private Double X1p;
@@ -21,8 +20,7 @@ public class XYValue {
     private Double Y4p;
     private Double Y4m;
 
-    public XYValue(Integer channel, Double x0, Double y0, Double x1p, Double x1m, Double y1p, Double y1m, Double x2p, Double x2m, Double y2p, Double y2m, Double x3p, Double x3m, Double y3p, Double y3m, Double x4p, Double x4m, Double y4p, Double y4m) {
-        this.channel = channel;
+    public BasicValues(Double x0, Double y0, Double x1p, Double x1m, Double y1p, Double y1m, Double x2p, Double x2m, Double y2p, Double y2m, Double x3p, Double x3m, Double y3p, Double y3m, Double x4p, Double x4m, Double y4p, Double y4m) {
         X0 = x0;
         Y0 = y0;
         X1p = x1p;
@@ -41,14 +39,6 @@ public class XYValue {
         X4m = x4m;
         Y4p = y4p;
         Y4m = y4m;
-    }
-
-    public Integer getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Integer channel) {
-        this.channel = channel;
     }
 
     public Double getX0() {

@@ -1,12 +1,10 @@
 package net.neutrinosoft.brainiac;
 
-import net.neutrinosoft.brainiac.common.ManagerActivityZone;
-
 public class UserActivity {
     private ManagerActivityZone activityZone;
-    private double percent;
+    private float percent;
 
-    public UserActivity(ManagerActivityZone activityZone, double percent) {
+    public UserActivity(ManagerActivityZone activityZone, float percent) {
         this.activityZone = activityZone;
         this.percent = percent;
     }
@@ -19,11 +17,11 @@ public class UserActivity {
         this.activityZone = activityZone;
     }
 
-    public double getPercent() {
+    public float getPercent() {
         return percent;
     }
 
-    public void setPercent(double percent) {
+    public void setPercent(float percent) {
         this.percent = percent;
     }
 }
