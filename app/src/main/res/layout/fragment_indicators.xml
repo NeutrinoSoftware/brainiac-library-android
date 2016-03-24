@@ -13,18 +13,19 @@
         android:layout_marginTop="10dp"
         android:text="Start" />
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/rlIndicators"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_horizontal">
+        android:layout_marginTop="10dp">
 
-        <RelativeLayout
-            android:id="@+id/rlSleep"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal">
 
             <TextView
+                android:id="@+id/tvSleep"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
@@ -34,14 +35,8 @@
                 android:text="Sleep"
                 android:textSize="11sp" />
 
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlDeepRelaxation"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
             <TextView
+                android:id="@+id/tvDeepRelaxation"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
@@ -51,14 +46,8 @@
                 android:text="Deep\nrelaxation"
                 android:textSize="11sp" />
 
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlRelaxation"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
             <TextView
+                android:id="@+id/tvRelaxation"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
@@ -68,14 +57,8 @@
                 android:text="Relaxation"
                 android:textSize="11sp" />
 
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlNormalActivation"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
             <TextView
+                android:id="@+id/tvNormalActivation"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
@@ -85,14 +68,8 @@
                 android:text="Normal\nactivation"
                 android:textSize="11sp" />
 
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlExcitement"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
             <TextView
+                android:id="@+id/tvExcitement"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
@@ -102,14 +79,8 @@
                 android:text="Excitement"
                 android:textSize="11sp" />
 
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlDeepExcitement"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
             <TextView
+                android:id="@+id/tvDeepExcitement"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
@@ -119,9 +90,9 @@
                 android:text="Deep\nexcitement"
                 android:textSize="11sp" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="300dp"

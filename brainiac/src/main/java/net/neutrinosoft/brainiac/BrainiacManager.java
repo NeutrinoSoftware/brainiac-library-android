@@ -499,10 +499,10 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
                 if (onIndicatorsStateChangedCallback != null && fftValues.size() % INDICATOR_PERIOD == 0) {
                     onIndicatorsStateChangedCallback.onIndicatorsStateChanged(getIndicatorsState());
                 }
-                handler.postDelayed(this, 0);
+                handler.post(this);
             }
         };
-        handler.postDelayed(indicatorsCallBack, 0);
+        handler.post(indicatorsCallBack);
     }
 
     private void initIndicators() {

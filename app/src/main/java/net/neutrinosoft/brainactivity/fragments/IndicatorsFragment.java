@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import net.neutrinosoft.brainactivity.R;
 import net.neutrinosoft.brainiac.BrainiacManager;
@@ -65,42 +67,60 @@ public class IndicatorsFragment extends Fragment implements OnClickListener {
     }
 
     private void startIndicators() {
-        final RelativeLayout rlRelaxation = (RelativeLayout) getActivity().findViewById(R.id.rlRelaxation);
-        final RelativeLayout rlDeepRelaxation = (RelativeLayout) getActivity().findViewById(R.id.rlDeepRelaxation);
-        final RelativeLayout rlSleep = (RelativeLayout) getActivity().findViewById(R.id.rlSleep);
-        final RelativeLayout rlNormalActivation = (RelativeLayout) getActivity().findViewById(R.id.rlNormalActivation);
-        final RelativeLayout rlExcitement = (RelativeLayout) getActivity().findViewById(R.id.rlExcitement);
-        final RelativeLayout rlDeepExcitement = (RelativeLayout) getActivity().findViewById(R.id.rlDeepExcitement);
+        final RelativeLayout rlIndicators = (RelativeLayout) getActivity().findViewById(R.id.rlIndicators);
+        final TextView tvSleep = (TextView) getActivity().findViewById(R.id.tvSleep);
+        final TextView tvDeepRelaxation = (TextView) getActivity().findViewById(R.id.tvDeepRelaxation);
+        final TextView tvRelaxation = (TextView) getActivity().findViewById(R.id.tvRelaxation);
+        final TextView tvNormalActivation = (TextView) getActivity().findViewById(R.id.tvNormalActivation);
+        final TextView tvExcitement = (TextView) getActivity().findViewById(R.id.tvExcitement);
+        final TextView tvDeepExcitement = (TextView) getActivity().findViewById(R.id.tvDeepExcitement);
+        final int widthLeft = (tvSleep.getWidth() + tvDeepRelaxation.getWidth() + tvRelaxation.getWidth());
+        final int widthRight = (tvNormalActivation.getWidth() + tvExcitement.getWidth() + tvDeepExcitement.getWidth());
         brainiacManager.setOnIndicatorsStateChangedCallback(new OnIndicatorsStateChangedCallback() {
             @Override
             public void onIndicatorsStateChanged(IndicatorsState indicatorsState) {
                 float percent = indicatorsState.getActivities().getPercent();
                 ManagerActivityZone zone = indicatorsState.getActivities().getActivityZone();
+                boolean direction = false;
 
-                clearRL(rlRelaxation);
-                clearRL(rlDeepRelaxation);
-                clearRL(rlSleep);
-                clearRL(rlNormalActivation);
-                clearRL(rlExcitement);
-                clearRL(rlDeepExcitement);
+                if (rlIndicators.getChildCount() > 1) {
+                    rlIndicators.removeViewAt(0);
+                }
 
                 if (zone == ManagerActivityZone.Relaxation) {
-                    paintRL(rlRelaxation, percent);
+                    direction = false;
                 }
                 if (zone == ManagerActivityZone.HighRelaxation) {
-                    paintRL(rlDeepRelaxation, percent);
+                    direction = false;
                 }
                 if (zone == ManagerActivityZone.Dream) {
-                    paintRL(rlSleep, percent);
+                    direction = false;
                 }
                 if (zone == ManagerActivityZone.NormalActivity) {
-                    paintRL(rlNormalActivation, percent);
+                    direction = true;
                 }
                 if (zone == ManagerActivityZone.Agitation) {
-                    paintRL(rlExcitement, percent);
+                    direction = true;
                 }
                 if (zone == ManagerActivityZone.HighAgitation) {
-                    paintRL(rlDeepExcitement, percent);
+                    direction = true;
+                }
+
+                View view = new View(getActivity());
+                if (direction) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) (widthRight * percent), rlIndicators.getHeight());
+                    view.setX(tvNormalActivation.getX());
+                    view.setY(tvNormalActivation.getY());
+                    view.setLayoutParams(params);
+                    view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.green));
+                    rlIndicators.addView(view, 0);
+                } else {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) (widthLeft * percent), rlIndicators.getHeight());
+                    view.setX(tvNormalActivation.getX() - widthLeft * percent);
+                    view.setY(tvNormalActivation.getY());
+                    view.setLayoutParams(params);
+                    view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.green));
+                    rlIndicators.addView(view, 0);
                 }
 
                 green.setBackgroundResource(R.color.grey);
@@ -126,20 +146,6 @@ public class IndicatorsFragment extends Fragment implements OnClickListener {
                 }
             }
         });
-    }
-
-    private void paintRL(RelativeLayout rl, double percent) {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (rl.getWidth() * percent), rl.getHeight());
-        View view = new View(getActivity());
-        view.setLayoutParams(params);
-        view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.green));
-        rl.addView(view, 0);
-    }
-
-    private void clearRL(RelativeLayout rl) {
-        if (rl.getChildCount() > 1) {
-            rl.removeViewAt(0);
-        }
     }
 
 }
