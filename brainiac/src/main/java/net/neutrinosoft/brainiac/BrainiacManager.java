@@ -1,7 +1,9 @@
 package net.neutrinosoft.brainiac;
 
+import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothAdapter.LeScanCallback;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -9,8 +11,13 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
+import android.content.pm.PackageManager;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import net.neutrinosoft.brainiac.callback.OnDeviceCallback;
 import net.neutrinosoft.brainiac.callback.OnIndicatorsStateChangedCallback;
@@ -29,7 +36,7 @@ import java.util.UUID;
 /**
  * The BrainiacManager class handles connections and data transfer between Braniac (alpha title) accessory and Android device.
  */
-public class BrainiacManager extends BluetoothGattCallback implements BluetoothAdapter.LeScanCallback {
+public class BrainiacManager extends BluetoothGattCallback implements LeScanCallback {
 
     public static final String TAG = BrainiacManager.class.getSimpleName();
 
@@ -208,8 +215,16 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         }
         values.clear();
         fftValues.clear();
-        bluetoothAdapter.startLeScan(this);
-
+        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
+            } else {
+                Log.d(TAG, "Location permission does not allowed");
+                Toast.makeText(context, "Location permission does not allowed", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            bluetoothAdapter.startLeScan(this);
+        }
     }
 
     /**
@@ -231,12 +246,13 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     }
 
     @Override
-    public final void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanRecord) {
+    public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanRecord) {
+        String deviceName = bluetoothDevice.getName();
         Log.d(TAG, "onLeScan()");
-        Log.d(TAG, bluetoothDevice.getName());
+        Log.d(TAG, deviceName);
         Log.d(TAG, bluetoothDevice.getAddress());
         Log.d(TAG, Arrays.toString(bluetoothDevice.getUuids()));
-        if (DEVICE_NAME.equals(bluetoothDevice.getName())) {
+        if (DEVICE_NAME.equals(deviceName)) {
             this.neuroBLE = bluetoothDevice;
             if (onDeviceCallback != null) {
                 onDeviceCallback.onDeviceFound(bluetoothDevice);
@@ -254,7 +270,11 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
             onScanCallback.onScanStop();
         }
         if (bluetoothAdapter != null) {
-            bluetoothAdapter.stopLeScan(this);
+            if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
+                bluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
+            } else {
+                bluetoothAdapter.stopLeScan(this);
+            }
         }
 
     }
@@ -744,5 +764,13 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         basicValues = new BasicValues(X0, Y0, X1p, X1m, Y1p, Y1m, X2p, X2m, Y2p, Y2m, X3p, X3m, Y3p, Y3m, X4p, X4m, Y4p, Y4m);
 
     }
+
+    private ScanCallback scanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            BluetoothDevice device = result.getDevice();
+            onLeScan(device, 0, null);
+        }
+    };
 
 }
