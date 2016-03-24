@@ -472,7 +472,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     }
 
     public boolean enableIndicators() {
-        if(fftValues.size() > 3) {
+        if(fftValues.size() > INDICATOR_PERIOD) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
