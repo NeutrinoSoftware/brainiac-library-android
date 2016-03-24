@@ -302,7 +302,9 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
         } else {
             if (onDeviceCallback != null) {
                 onDeviceCallback.onDeviceConnectionError(neuroBLE);
-                disableIndicators();
+                if (onIndicatorsStateChangedCallback != null) {
+                    disableIndicators();
+                }
             }
         }
     }
@@ -472,7 +474,7 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     }
 
     public boolean enableIndicators() {
-        if(fftValues.size() > INDICATOR_PERIOD) {
+        if (fftValues.size() > INDICATOR_PERIOD) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -487,7 +489,9 @@ public class BrainiacManager extends BluetoothGattCallback implements BluetoothA
     }
 
     public void disableIndicators() {
-        handler.removeCallbacks(indicatorsCallBack);
+        if (onIndicatorsStateChangedCallback != null) {
+            handler.removeCallbacks(indicatorsCallBack);
+        }
     }
 
     private void startIndicators() {
