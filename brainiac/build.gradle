@@ -1,5 +1,29 @@
 apply plugin: 'com.android.library'
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'brainiac'
+
+    publishedGroupId = 'net.neutrinosoft.brainiac'
+    libraryName = 'brainiac'
+    artifact = 'brainiac'
+
+    libraryDescription = 'The Brainiac library handles connections and data transfer between Braniac (alpha title) accessory and Android device.'
+
+    siteUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android'
+    gitUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android.git'
+
+    libraryVersion = '0.3'
+
+    developerId = 'neutrinosoftware'
+    developerName = 'LTD Neutrino'
+    developerEmail = 'movsesiv@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "22.0.1"
@@ -23,3 +47,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.github.wendykierp:JTransforms:3.0'
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
