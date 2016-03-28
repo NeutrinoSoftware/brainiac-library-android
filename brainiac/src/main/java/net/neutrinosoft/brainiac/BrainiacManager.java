@@ -577,10 +577,10 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
                 Log.d(TAG, "beta " + fftValues.get(i)[2].getData3());
             }
 
-            double averageAlpha2 = average(alpha2);
-            double averageAlpha4 = average(alpha4);
-            double averageBeta1 = average(beta1);
-            double averageBeta3 = average(beta3);
+            double averageAlpha2 = doubleAverage(alpha2);
+            double averageAlpha4 = doubleAverage(alpha4);
+            double averageBeta1 = doubleAverage(beta1);
+            double averageBeta3 = doubleAverage(beta3);
             averages[0] = (averageAlpha2 + averageAlpha4) / 2;
             averages[1] = (averageBeta1 + averageBeta3) / 2;
             return averages;
