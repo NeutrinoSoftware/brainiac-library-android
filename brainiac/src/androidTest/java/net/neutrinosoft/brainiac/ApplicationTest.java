@@ -1,5 +1,6 @@
 package net.neutrinosoft.brainiac;
 
+import android.app.Activity;
 import android.app.Application;
 import android.test.ApplicationTestCase;
 

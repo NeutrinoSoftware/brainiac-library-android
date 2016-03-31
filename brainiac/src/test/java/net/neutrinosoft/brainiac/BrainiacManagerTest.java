@@ -2,79 +2,35 @@ package net.neutrinosoft.brainiac;
 
 import android.app.Activity;
 
-import junit.framework.TestCase;
+import junit.framework.Assert;
 
-public class BrainiacManagerTest extends TestCase {
+import org.junit.Test;
 
-    private BrainiacManager brainiacManager;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        brainiacManager = BrainiacManager.getBrainiacManager(new Activity());
+public class BrainiacManagerTest {
+
+    @Test
+    public void getBrainiacManager() throws Exception {
+        BrainiacManager brainiacManager1 = BrainiacManager.getBrainiacManager(new Activity());
+        BrainiacManager brainiacManager2 = BrainiacManager.getBrainiacManager(new Activity());
+        //verify singleton
+        Assert.assertSame(brainiacManager1, brainiacManager2);
     }
 
-    public void testStartScan() throws Exception {
-
+    @Test
+    public void startScan() throws Exception {
+        BrainiacManager brainiacManager = mock(BrainiacManager.class);
+        brainiacManager.startScan();
+        verify(brainiacManager, times(1)).startScan();
     }
 
-    public void testIsConnected() throws Exception {
-
-    }
-
-    public void testIsInTestMode() throws Exception {
-
-    }
-
-    public void testOnLeScan() throws Exception {
-
-    }
-
-    public void testStopScan() throws Exception {
-
-    }
-
-    public void testOnConnectionStateChange() throws Exception {
-
-    }
-
-    public void testOnServicesDiscovered() throws Exception {
-
-    }
-
-    public void testOnCharacteristicRead() throws Exception {
-
-    }
-
-    public void testOnCharacteristicChanged() throws Exception {
-
-    }
-
-    public void testGetBatteryLevel() throws Exception {
-
-    }
-
-    public void testRelease() throws Exception {
-
-    }
-
-    public void testStartTest() throws Exception {
-
-    }
-
-    public void testStopTest() throws Exception {
-
-    }
-
-    public void testEnableIndicators() throws Exception {
-
-    }
-
-    public void testDisableIndicators() throws Exception {
-
-    }
-
-    public void testGetIndicatorsState() throws Exception {
-
+    @Test
+    public void stopScan() throws Exception {
+        BrainiacManager brainiacManager = mock(BrainiacManager.class);
+        brainiacManager.stopScan();
+        verify(brainiacManager, times(1)).stopScan();
     }
 }
