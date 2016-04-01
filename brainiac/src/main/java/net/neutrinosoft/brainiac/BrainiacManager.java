@@ -20,6 +20,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import net.neutrinosoft.brainiac.callback.OnDeviceCallback;
+import net.neutrinosoft.brainiac.callback.OnIndicatorsStateChangedCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveDataCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveFftDataCallback;
 import net.neutrinosoft.brainiac.callback.OnScanCallback;
@@ -55,27 +56,21 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
     private OnReceiveFftDataCallback onReceiveFftDataCallback;
     private OnDeviceCallback onDeviceCallback;
     private OnScanCallback onScanCallback;
+    private OnIndicatorsStateChangedCallback onIndicatorsStateChangedCallback;
     private boolean isTestMode;
 
     private OnReceiveDataCallback onReceiveDataCallback;
-    private int lastGreenValue = 0;
-    private double lastGreenAverage = 0;
-    private final static int STEP = 10;
-    private final static int TIMESPAN = 180;
-    private final static double YELLOW_FLAG_LOW = 0.2;
-    private final static double YELLOW_FLAG_HIGH = 0.3;
-    private final static double YELLOW_DIFF_LOW = YELLOW_FLAG_LOW / (TIMESPAN / STEP);
-    private final static double YELLOW_DIFF_HIGH = YELLOW_FLAG_HIGH / (TIMESPAN / STEP);
-
-    private final static double RED_1_FLAG = 0.2;
-    private final static double RED_2_FLAG = 0.3;
-    private final static double RED_1_DIFF_HIGH = RED_1_FLAG / (TIMESPAN / STEP);
-    private final static double RED_2_DIFF_HIGH = RED_2_FLAG / (TIMESPAN / STEP);
     private Handler handler;
-    private Runnable testCallback;
+    private Runnable testCallback, indicatorsCallBack;
 
     private final static String TRANSFER_CHARACTERISTIC_UUID = "6E400002-B534-f393-67a9-e50e24dcca9e";
     private final static String BATTERY_LEVEL_CHARACTERISTIC_UUID = "00000000-0000-0000-0000-000000000000";
+
+    private final int INDICATOR_PERIOD = 5;
+    private final int BASIC_VALUES_PERIOD = 10;
+    private double averageBasicAlpha;
+    private double averageBasicBeta;
+    private BasicValues basicValues;
 
     /**
      * Register a callback to be invoked when fft data received.
@@ -129,6 +124,10 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
      */
     public void setOnReceiveDataCallback(OnReceiveDataCallback onReceiveDataCallback) {
         this.onReceiveDataCallback = onReceiveDataCallback;
+    }
+
+    public void setOnIndicatorsStateChangedCallback(OnIndicatorsStateChangedCallback onIndicatorsStateChangedCallback) {
+        this.onIndicatorsStateChangedCallback = onIndicatorsStateChangedCallback;
     }
 
     private FftValue[] getFftData() {
@@ -323,6 +322,9 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
         } else {
             if (onDeviceCallback != null) {
                 onDeviceCallback.onDeviceConnectionError(neuroBLE);
+                if (onIndicatorsStateChangedCallback != null) {
+                    disableIndicators();
+                }
             }
         }
     }
@@ -404,199 +406,6 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
     public int getBatteryLevel() {
         return batteryLevel;
     }
-
-    /**
-     * Returns flag which define the state of examined man detecting if the state of brain activity is full and active.
-     * Defined as: When closing the eyes or with simple contemplation of neutral images dominant frequency in the range of alpha (7-13 Hz)
-     * has no oscillations more than 20% for 3 minutes during the registration process.
-     *
-     * @param channel Number for processing channel (0-3)
-     * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
-     */
-    public boolean processGreenChannel(int channel) {
-        int length = BrainiacManager.fftValues.size();
-        ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
-
-        ArrayList<Integer> greens = new ArrayList<>();
-
-        for (int i = lastGreenValue; i < length; i++) {
-            FftValue[] fftValues = fft.get(i);
-            greens.add(fftValues[channel].getData2());
-        }
-
-        int average = average(greens);
-
-        for (int i = 0; i < (length - lastGreenValue); i++) {
-            int value = greens.get(i);
-            if (Math.abs((lastGreenValue - value)) > (lastGreenValue * 0.2)) {
-                lastGreenAverage = (lastGreenAverage + average) / 2.0;
-                lastGreenValue = length;
-                return false;
-
-            }
-        }
-
-        lastGreenAverage = (lastGreenAverage + average) / 2.0;
-        lastGreenValue = length;
-
-        return true;
-    }
-
-    /**
-     * Returns flag which define the state of examined man detecting if the state of brain activity is
-     * Relaxation brain activity (EEG spectrum for simply "nice" relaxation, during which the person can not adequately drive or write software).
-     * Defined as: the dominant frequency in the range of alpha (7-13 Hz) increases in amplitude (power spectrum) on greater than 20% but
-     * less than 30% within 3 minutes.
-     *
-     * @param channel Number for processing channel (0-3)
-     * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
-     */
-    public boolean processYellowForChannel(int channel) {
-        int length = fftValues.size();
-        ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
-
-
-        if (length >= STEP) {
-            ArrayList<Integer> yellows = new ArrayList<>();
-            ArrayList<Integer> yellowsUpper = new ArrayList<>();
-            ArrayList<Integer> yellowsLower = new ArrayList<>();
-
-            for (int i = length - STEP; i < length; i++) {
-                FftValue[] fftValues = fft.get(i);
-                yellowsLower.add(fftValues[channel].getData1());
-                yellows.add(fftValues[channel].getData2());
-                yellowsUpper.add(fftValues[channel].getData3());
-            }
-
-            for (int i = length - STEP; i < length; i++) {
-                FftValue[] fftValues = fft.get(i);
-                yellowsUpper.add(fftValues[channel].getData3());
-            }
-
-            int val1 = yellows.get(0);
-            int val2 = yellows.get(STEP - 1);
-
-            int val1lower = yellowsLower.get(0);
-            int val2lower = yellowsLower.get(STEP - 1);
-
-            int val1upper = yellowsUpper.get(0);
-            int val2upper = yellowsUpper.get(STEP - 1);
-
-            if (val2 > val1) {
-                boolean mainCondition = (val2 - val1) > YELLOW_DIFF_LOW && (val2 - val1) < YELLOW_DIFF_HIGH;
-                boolean lowCondition = val2lower > val1lower && (val2lower - val1lower) > (0.1 / (TIMESPAN / STEP));
-                boolean highCondition = val2upper < val1upper && (val1upper - val2upper) > (0.05 / (TIMESPAN / STEP));
-
-
-                return mainCondition && lowCondition && highCondition;
-            } else {
-                return false;
-            }
-
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns flag which define the state of examined man detecting if the state of brain activity is Excessive stimulation of neurons and therefore
-     * the beginning of inappropriate, excessive actions. Defined as: the dominant frequency (range) of alpha (7-13 Hz) is reduced in amplitude (power spectrum)
-     * on greater than 20% for 3 minutes.
-     *
-     * @param channel Number for processing channel (0-3)
-     * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
-     */
-    public boolean processRed1ForChannel(int channel) {
-        int length = fftValues.size();
-        ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
-
-        if (length >= STEP) {
-            ArrayList<Integer> reds = new ArrayList<>();
-            ArrayList<Integer> redsUpper = new ArrayList<>();
-            ArrayList<Integer> redsLower = new ArrayList<>();
-
-            for (int i = length - STEP; i < length; i++) {
-                FftValue[] fftValues = fft.get(i);
-                redsLower.add(fftValues[channel].getData1());
-                reds.add(fftValues[channel].getData2());
-                redsUpper.add(fftValues[channel].getData3());
-            }
-
-
-            int val1 = reds.get(0);
-            int val2 = reds.get(STEP - 1);
-
-            int val1lower = redsLower.get(0);
-            int val2lower = redsLower.get(STEP - 1);
-
-            int val1upper = redsUpper.get(0);
-            int val2upper = redsUpper.get(STEP - 1);
-
-            if (val2 < val1) {
-                boolean mainCondition = (val1 - val2) > RED_1_DIFF_HIGH;
-                boolean lowCondition = val2lower < val1lower && (val1lower - val2lower) > (0.1 / (TIMESPAN / STEP));
-                boolean highCondition = val2upper > val1upper && (val2upper - val1upper) > (0.05 / (TIMESPAN / STEP));
-
-                return mainCondition && lowCondition && highCondition;
-            } else {
-                return false;
-            }
-
-        }
-
-        return false;
-
-
-    }
-
-    /**
-     * Returns flag which define the state of examined man detecting if the state of brain activity is in super relaxation.
-     * Defined as: the dominant frequency (range) of alpha (7-13 Hz) is increasing in amplitude (power spectrum) on greater than 30% for 3 minutes.
-     *
-     * @param channel Number for processing channel (0-3)
-     * @return flag for such activity for last 5 sec (so app should call this method each 5 sec to get trend activity)
-     */
-    public boolean processRed2ForChannel(int channel) {
-        int length = fftValues.size();
-        ArrayList<FftValue[]> fft = BrainiacManager.fftValues;
-
-        if (length >= STEP) {
-            ArrayList<Integer> reds = new ArrayList<>();
-            ArrayList<Integer> redsUpper = new ArrayList<>();
-            ArrayList<Integer> redsLower = new ArrayList<>();
-
-            for (int i = length - STEP; i < length; i++) {
-                FftValue[] fftValues = fft.get(i);
-                redsLower.add(fftValues[channel].getData1());
-                reds.add(fftValues[channel].getData2());
-                redsUpper.add(fftValues[channel].getData3());
-            }
-
-
-            int val1 = reds.get(0);
-            int val2 = reds.get(STEP - 1);
-
-            int val1lower = redsLower.get(0);
-            int val2lower = redsLower.get(STEP - 1);
-
-            int val1upper = redsUpper.get(0);
-            int val2upper = redsUpper.get(STEP - 1);
-
-            if (val2 < val1) {
-                boolean mainCondition = (val1 - val2) > RED_2_DIFF_HIGH;
-                boolean lowCondition = val2lower < val1lower && (val1lower - val2lower) > (0.15 / (TIMESPAN / STEP));
-                boolean highCondition = val2upper > val1upper && (val2upper - val1upper) > (0.15 / (TIMESPAN / STEP));
-
-                return mainCondition && lowCondition && highCondition;
-            } else {
-                return false;
-            }
-
-        }
-
-        return false;
-    }
-
 
     private static int average(List<Integer> list) {
         // 'average' is undefined if there are no elements in the list.
@@ -682,6 +491,278 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
             isTestMode = false;
             handler.removeCallbacks(testCallback);
         }
+    }
+
+    public boolean enableIndicators() {
+        if (fftValues.size() > INDICATOR_PERIOD) {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startIndicators();
+                }
+            }, BASIC_VALUES_PERIOD * 1000);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void disableIndicators() {
+        if (onIndicatorsStateChangedCallback != null) {
+            handler.removeCallbacks(indicatorsCallBack);
+        }
+    }
+
+    private void startIndicators() {
+        initIndicators();
+        handler = new Handler();
+        indicatorsCallBack = new Runnable() {
+            @Override
+            public void run() {
+                if (onIndicatorsStateChangedCallback != null && fftValues.size() % INDICATOR_PERIOD == 0) {
+                    onIndicatorsStateChangedCallback.onIndicatorsStateChanged(getIndicatorsState());
+                }
+                handler.post(this);
+            }
+        };
+        handler.post(indicatorsCallBack);
+    }
+
+    private void initIndicators() {
+        double[] averages = defineBasicAverageValuesForRange(BASIC_VALUES_PERIOD);
+
+        averageBasicAlpha = averages[0];
+        averageBasicBeta = averages[1];
+
+        fillStartXYValues();
+    }
+
+    private double[] defineBasicAverageValuesForRange(int range) {
+        double[] averages = new double[2];
+        if (fftValues.size() > range) {
+            List<Integer> alpha2 = new ArrayList<>();
+            for (int i = (fftValues.size() - range); i < fftValues.size(); i++) {
+                if (fftValues.get(i)[1].getCounter() == 0) {
+                    return null;
+                }
+                alpha2.add(fftValues.get(i)[1].getData2());
+                Log.d(TAG, "alpha " + fftValues.get(i)[1].getData2());
+            }
+
+            List<Integer> alpha4 = new ArrayList<>();
+            for (int i = (fftValues.size() - range); i < fftValues.size(); i++) {
+                if (fftValues.get(i)[3].getCounter() == 0) {
+                    return null;
+                }
+                alpha4.add(fftValues.get(i)[3].getData2());
+                Log.d(TAG, "alpha " + fftValues.get(i)[3].getData2());
+            }
+
+            List<Integer> beta1 = new ArrayList<>();
+            for (int i = (fftValues.size() - range); i < fftValues.size(); i++) {
+                if (fftValues.get(i)[0].getCounter() == 0) {
+                    return null;
+                }
+                beta1.add(fftValues.get(i)[0].getData3());
+                Log.d(TAG, "beta " + fftValues.get(i)[0].getData3());
+            }
+
+            List<Integer> beta3 = new ArrayList<>();
+            for (int i = (fftValues.size() - range); i < fftValues.size(); i++) {
+                if (fftValues.get(i)[2].getCounter() == 0) {
+                    return null;
+                }
+                beta3.add(fftValues.get(i)[2].getData3());
+                Log.d(TAG, "beta " + fftValues.get(i)[2].getData3());
+            }
+
+            double averageAlpha2 = doubleAverage(alpha2);
+            double averageAlpha4 = doubleAverage(alpha4);
+            double averageBeta1 = doubleAverage(beta1);
+            double averageBeta3 = doubleAverage(beta3);
+            averages[0] = (averageAlpha2 + averageAlpha4) / 2;
+            averages[1] = (averageBeta1 + averageBeta3) / 2;
+            return averages;
+        }
+        return null;
+    }
+
+    private double doubleAverage(List<Integer> array) {
+        if (array == null || array.isEmpty()) {
+            return 0;
+        }
+
+        double sum = 0;
+
+        for (int elem : array) {
+            sum += elem;
+        }
+        return sum / array.size();
+    }
+
+    public IndicatorsState getIndicatorsState() {
+        double[] averages = defineBasicAverageValuesForRange(INDICATOR_PERIOD);
+
+        if (averages == null) {
+            return null;
+        }
+        return new IndicatorsState(processXYValues(averages), processColorIndicators(averages));
+    }
+
+    private List<String> processColorIndicators(double[] averages) {
+        double X = averages[0];
+        double Y = averages[1];
+
+        double X0 = basicValues.getX0();
+        double Y0 = basicValues.getY0();
+        Log.d(TAG, "X = " + X + "  Y = " + Y + ", X0 = " + X0 + "  Y0 = " + Y0);
+        List<String> colors = new ArrayList<>();
+
+        if ((0.7 * X0 <= X && X <= 1.3 * X0 && 0 <= Y && Y <= 1.25 * Y0) || (1.3 * X0 < X && X <= 1.6 * X0 && Y0 <= Y && Y < 1.25 * Y0) || (X > 1.6 * X0 && Y > Y0) || (0 < X && X <= 0.7 * X0 && Y0 > Y && Y > 0.75 * Y0)) {
+            colors.add("green");
+        }
+        if (((1.3 * X0) < X && X <= (1.6 * X0) && 0 < Y && Y <= Y0) || (0 < X && X <= (0.7 * X0) && 0 < Y && Y <= (0.75 * Y0))) {
+            colors.add("yellow");
+        }
+        if ((0 < X && X <= 0.7 * X0 && Y0 < Y) || (1.3 * X0 < X && X <= 1.6 * X0 && Y >= 1.25 * Y0)) {
+            colors.add("red1");
+        }
+        if (X > 1.6 * X0 && 0.75 * 0 < Y && Y <= Y0) {
+            colors.add("red2");
+        }
+
+        return colors;
+    }
+
+    private UserActivity processXYValues(double[] averages) {
+        double X = averages[0];
+        double Y = averages[1];
+
+        double X0 = basicValues.getX0();
+        double Y0 = basicValues.getY0();
+        double X1p = basicValues.getX1p();
+        double X1m = basicValues.getX1m();
+        double Y1p = basicValues.getX1p();
+        double Y1m = basicValues.getY1m();
+        double X2p = basicValues.getX2p();
+        double X2m = basicValues.getX2m();
+        double Y2p = basicValues.getY2p();
+        double Y2m = basicValues.getY2m();
+        double X3p = basicValues.getX3p();
+        double X3m = basicValues.getX3m();
+        double Y3p = basicValues.getY3p();
+        double Y3m = basicValues.getY3m();
+        double X4p = basicValues.getX4p();
+        double X4m = basicValues.getX4m();
+        double Y4p = basicValues.getY4p();
+        double Y4m = basicValues.getY4m();
+
+        ManagerActivityZone activityZone = ManagerActivityZone.NormalActivity;
+        float percent = 1.0F;
+        if (X > X0) {
+            //positive values
+            if (X1p >= X && X > X0 && Y >= Y0) {
+                activityZone = ManagerActivityZone.Relaxation;
+                percent = 0.25F;
+            }
+            if (X1p >= X && X > X0 && Y >= Y1p && Y0 >= Y) {
+                activityZone = ManagerActivityZone.Relaxation;
+                percent = 0.5F;
+            }
+            if (X1p >= X && X > X0 && Y1p >= Y) {
+                activityZone = ManagerActivityZone.Relaxation;
+                percent = 0.75F;
+            }
+            if (X2p >= X && X > X1p && Y0 >= Y && Y >= Y2p) {
+                activityZone = ManagerActivityZone.Relaxation;
+                percent = 1;
+            }
+            if (X3p >= X && X > X2p && Y >= Y0) {
+                activityZone = ManagerActivityZone.HighRelaxation;
+                percent = 0.25F;
+            }
+            if (X3p >= X && X > X2p && Y0 >= Y && Y >= Y3p) {
+                activityZone = ManagerActivityZone.HighRelaxation;
+                percent = 0.5F;
+            }
+            if (X3p >= X && X > X2p && Y3p >= Y) {
+                activityZone = ManagerActivityZone.HighRelaxation;
+                percent = 0.75F;
+            }
+            if (X4p >= X && X > X3p && Y0 >= Y && Y >= Y4p) {
+                activityZone = ManagerActivityZone.HighRelaxation;
+                percent = 1;
+            }
+            if (X >= X4p) {
+                activityZone = ManagerActivityZone.Dream;
+                percent = 0.5F;
+            }
+
+        } else {
+            //negative values
+            if (X1m < X && X <= X0 && Y < Y0) {
+                activityZone = ManagerActivityZone.NormalActivity;
+                percent = 0.25F;
+            }
+            if (X1m < X && X <= X0 && Y0 <= Y && Y <= Y1m) {
+                activityZone = ManagerActivityZone.NormalActivity;
+                percent = 0.5F;
+            }
+            if (X1m < X && X <= X0 && Y1m < Y) {
+                activityZone = ManagerActivityZone.NormalActivity;
+                percent = 0.75F;
+            }
+            if (X2m < X && X <= X1m && Y0 < Y && Y <= Y2m) {
+                activityZone = ManagerActivityZone.NormalActivity;
+                percent = 1;
+            }
+            if (X3m < X && X <= X2m && Y < Y0) {
+                activityZone = ManagerActivityZone.Agitation;
+                percent = 0.25F;
+            }
+            if (X3m < X && X <= X2m && Y0 < Y && Y <= Y3m) {
+                activityZone = ManagerActivityZone.Agitation;
+                percent = 0.5F;
+            }
+            if (X3m < X && X <= X2m && Y3m < Y) {
+                activityZone = ManagerActivityZone.Agitation;
+                percent = 0.75F;
+            }
+            if (X4m < X && X <= X3m && Y0 < Y && Y <= Y4m) {
+                activityZone = ManagerActivityZone.Agitation;
+                percent = 1;
+            }
+            if (0 < X && X < 0.1 * X0) {
+                activityZone = ManagerActivityZone.HighAgitation;
+                percent = 0.5F;
+            }
+        }
+        return new UserActivity(activityZone, percent);
+    }
+
+    private void fillStartXYValues() {
+        double X0 = averageBasicAlpha;
+        double Y0 = averageBasicBeta;
+        double X1p = 1.3 * X0;
+        double X1m = 0.65 * (X0 - 0.1 * X0);
+        double Y1p = 0.9 * Y0;
+        double Y1m = 1.1 * Y0;
+        double X2p = 1.45 * X0;
+        double X2m = 0.45 * (X0 - 0.1 * X0);
+        double Y2p = 0.85 * Y0;
+        double Y2m = 1.15 * Y0;
+        double X3p = 1.55 * X0;
+        double X3m = 0.2 * (X0 - 0.1 * X0);
+        double Y3p = 0.8 * Y0;
+        double Y3m = 1.25 * Y0;
+        double X4p = 1.7 * X0;
+        double X4m = (X0 - 0.1 * X0);
+        double Y4p = 0.7 * Y0;
+        double Y4m = 1.3 * Y0;
+
+        basicValues = new BasicValues(X0, Y0, X1p, X1m, Y1p, Y1m, X2p, X2m, Y2p, Y2m, X3p, X3m, Y3p, Y3m, X4p, X4m, Y4p, Y4m);
+
     }
 
     private ScanCallback scanCallback = new ScanCallback() {

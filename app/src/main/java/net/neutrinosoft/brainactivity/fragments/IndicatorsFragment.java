@@ -3,30 +3,35 @@ package net.neutrinosoft.brainactivity.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import net.neutrinosoft.brainactivity.R;
 import net.neutrinosoft.brainiac.BrainiacManager;
+import net.neutrinosoft.brainiac.IndicatorsState;
+import net.neutrinosoft.brainiac.ManagerActivityZone;
+import net.neutrinosoft.brainiac.callback.OnIndicatorsStateChangedCallback;
 
-public class IndicatorsFragment extends Fragment implements View.OnClickListener {
+public class IndicatorsFragment extends Fragment implements OnClickListener {
 
-    private Button t3;
-    private Button t4;
-    private Button o1;
-    private Button o2;
+    private Button btnStart;
     private View green;
     private View yellow;
     private View red1;
     private View red2;
-    private int channel;
+    private BrainiacManager brainiacManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        channel = 0;
+        brainiacManager = BrainiacManager.getBrainiacManager(getActivity());
     }
 
     @Nullable
@@ -34,17 +39,8 @@ public class IndicatorsFragment extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_indicators, container, false);
 
-        t3 = (Button) view.findViewById(R.id.t3);
-        t3.setOnClickListener(this);
-
-        t4 = (Button) view.findViewById(R.id.t4);
-        t4.setOnClickListener(this);
-
-        o1 = (Button) view.findViewById(R.id.o1);
-        o1.setOnClickListener(this);
-
-        o2 = (Button) view.findViewById(R.id.o2);
-        o2.setOnClickListener(this);
+        btnStart = (Button) view.findViewById(R.id.btnStart);
+        btnStart.setOnClickListener(this);
 
         green = view.findViewById(R.id.green);
         yellow = view.findViewById(R.id.yellow);
@@ -54,67 +50,102 @@ public class IndicatorsFragment extends Fragment implements View.OnClickListener
         return view;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        brainiacManager.disableIndicators();
+    }
 
     @Override
     public void onClick(View v) {
-        t3.setEnabled(v.getId() != R.id.t3);
-        o1.setEnabled(v.getId() != R.id.o1);
-        t4.setEnabled(v.getId() != R.id.t4);
-        o2.setEnabled(v.getId() != R.id.o2);
-
-        switch (v.getId()) {
-            case R.id.t3: {
-                channel = 0;
-                break;
-            }
-            case R.id.o1: {
-                channel = 1;
-
-                break;
-            }
-            case R.id.t4: {
-                channel = 2;
-
-                break;
-            }
-            case R.id.o2: {
-                channel = 3;
-
-                break;
+        if (v.getId() == R.id.btnStart) {
+            if (brainiacManager.enableIndicators()) {
+                btnStart.setEnabled(false);
+                startIndicators();
             }
         }
-
-        updateIndicators();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateIndicators();
+    private void startIndicators() {
+        final RelativeLayout rlIndicators = (RelativeLayout) getActivity().findViewById(R.id.rlIndicators);
+        final TextView tvSleep = (TextView) getActivity().findViewById(R.id.tvSleep);
+        final TextView tvDeepRelaxation = (TextView) getActivity().findViewById(R.id.tvDeepRelaxation);
+        final TextView tvRelaxation = (TextView) getActivity().findViewById(R.id.tvRelaxation);
+        final TextView tvNormalActivation = (TextView) getActivity().findViewById(R.id.tvNormalActivation);
+        final TextView tvExcitement = (TextView) getActivity().findViewById(R.id.tvExcitement);
+        final TextView tvDeepExcitement = (TextView) getActivity().findViewById(R.id.tvDeepExcitement);
+        final int widthLeft = (tvSleep.getWidth() + tvDeepRelaxation.getWidth() + tvRelaxation.getWidth());
+        final int widthRight = (tvNormalActivation.getWidth() + tvExcitement.getWidth() + tvDeepExcitement.getWidth());
+        brainiacManager.setOnIndicatorsStateChangedCallback(new OnIndicatorsStateChangedCallback() {
+            @Override
+            public void onIndicatorsStateChanged(IndicatorsState indicatorsState) {
+                float percent = indicatorsState.getActivities().getPercent();
+                ManagerActivityZone zone = indicatorsState.getActivities().getActivityZone();
+                boolean direction = false;
+
+                if (rlIndicators.getChildCount() > 1) {
+                    rlIndicators.removeViewAt(0);
+                }
+
+                if (zone == ManagerActivityZone.Relaxation) {
+                    direction = false;
+                }
+                if (zone == ManagerActivityZone.HighRelaxation) {
+                    direction = false;
+                }
+                if (zone == ManagerActivityZone.Dream) {
+                    direction = false;
+                }
+                if (zone == ManagerActivityZone.NormalActivity) {
+                    direction = true;
+                }
+                if (zone == ManagerActivityZone.Agitation) {
+                    direction = true;
+                }
+                if (zone == ManagerActivityZone.HighAgitation) {
+                    direction = true;
+                }
+
+                View view = new View(getActivity());
+                if (direction) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) (widthRight * percent), rlIndicators.getHeight());
+                    view.setX(tvNormalActivation.getX());
+                    view.setY(tvNormalActivation.getY());
+                    view.setLayoutParams(params);
+                    view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.green));
+                    rlIndicators.addView(view, 0);
+                } else {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) (widthLeft * percent), rlIndicators.getHeight());
+                    view.setX(tvNormalActivation.getX() - widthLeft * percent);
+                    view.setY(tvNormalActivation.getY());
+                    view.setLayoutParams(params);
+                    view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.green));
+                    rlIndicators.addView(view, 0);
+                }
+
+                green.setBackgroundResource(R.color.grey);
+                yellow.setBackgroundResource(R.color.grey);
+                red1.setBackgroundResource(R.color.grey);
+                red2.setBackgroundResource(R.color.grey);
+                for (String color :
+                        indicatorsState.getColors()) {
+                    switch (color) {
+                        case "green":
+                            green.setBackgroundResource(R.color.green);
+                            break;
+                        case "yellow":
+                            yellow.setBackgroundResource(R.color.yellow);
+                            break;
+                        case "red1":
+                            red1.setBackgroundResource(R.color.red1);
+                            break;
+                        case "red2":
+                            red2.setBackgroundResource(R.color.red2);
+                            break;
+                    }
+                }
+            }
+        });
     }
 
-    private void updateIndicators() {
-        green.setBackgroundResource(R.color.grey);
-        yellow.setBackgroundResource(R.color.grey);
-        red1.setBackgroundResource(R.color.grey);
-        red2.setBackgroundResource(R.color.grey);
-
-        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(getActivity());
-        if (brainiacManager.isConnected()||brainiacManager.isInTestMode()) {
-            if (brainiacManager.processGreenChannel(channel)) {
-                green.setBackgroundResource(R.color.green);
-            }
-            if (brainiacManager.processYellowForChannel(channel)) {
-                yellow.setBackgroundResource(R.color.yellow);
-            }
-            if (brainiacManager.processRed1ForChannel(channel)) {
-                red1.setBackgroundResource(R.color.red1);
-            }
-            if (brainiacManager.processRed2ForChannel(channel)) {
-                red2.setBackgroundResource(R.color.red2);
-            }
-        }
-
-
-    }
 }
