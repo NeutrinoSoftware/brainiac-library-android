@@ -4,11 +4,11 @@ import android.app.Activity;
 
 import junit.framework.Assert;
 
+import net.neutrinosoft.brainiac.callback.OnScanCallback;
+
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 public class BrainiacManagerTest {
 
@@ -18,19 +18,22 @@ public class BrainiacManagerTest {
         BrainiacManager brainiacManager2 = BrainiacManager.getBrainiacManager(new Activity());
         //verify singleton
         Assert.assertSame(brainiacManager1, brainiacManager2);
+
     }
 
     @Test
-    public void startScan() throws Exception {
-        BrainiacManager brainiacManager = mock(BrainiacManager.class);
+    public void startScanOnScanStart() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(new Activity());
+        OnScanCallback onScanCallback = mock(OnScanCallback.class);
+        brainiacManager.setOnScanCallback(onScanCallback);
         brainiacManager.startScan();
-        verify(brainiacManager, times(1)).startScan();
     }
 
     @Test
-    public void stopScan() throws Exception {
-        BrainiacManager brainiacManager = mock(BrainiacManager.class);
-        brainiacManager.stopScan();
-        verify(brainiacManager, times(1)).stopScan();
+    public void startScanOnScanStartAndroid4() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(new Activity());
+
+        brainiacManager.startScan();
     }
+
 }

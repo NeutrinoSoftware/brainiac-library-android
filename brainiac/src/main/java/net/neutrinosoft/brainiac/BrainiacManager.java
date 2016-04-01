@@ -13,6 +13,7 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -49,7 +50,7 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
     private static ArrayList<Value> values = new ArrayList<>();
     private static ArrayList<FftValue[]> fftValues = new ArrayList<>();
     private static int batteryLevel = 0;
-    private Activity context;
+    private Context context;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothDevice neuroBLE;
     private BluetoothGatt bluetoothGatt;
@@ -105,14 +106,14 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
      * @param context - application context
      * @return instance of BrainiacManager
      */
-    public static BrainiacManager getBrainiacManager(Activity context) {
+    public static BrainiacManager getBrainiacManager(Context context) {
         if (singleton == null) {
             singleton = new BrainiacManager(context);
         }
         return singleton;
     }
 
-    private BrainiacManager(Activity context) {
+    private BrainiacManager(Context context) {
         this.context = context;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
@@ -217,13 +218,17 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
         fftValues.clear();
         if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
+                if (bluetoothAdapter != null) {
+                    bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
+                }
             } else {
                 Log.d(TAG, "Location permission does not allowed");
                 Toast.makeText(context, "Location permission does not allowed", Toast.LENGTH_SHORT).show();
             }
         } else {
-            bluetoothAdapter.startLeScan(this);
+            if (bluetoothAdapter != null) {
+                bluetoothAdapter.startLeScan(this);
+            }
         }
     }
 
@@ -284,12 +289,12 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
         if (onDeviceCallback != null) {
             onDeviceCallback.onDeviceConnecting(neuroBLE);
         }
-        context.runOnUiThread(new Runnable() {
+        /*context.runOnUiThread(new Runnable() {
             @Override
-            public void run() {
+            public void run() {*/
                 neuroBLE.connectGatt(context, false, BrainiacManager.this);
-            }
-        });
+            /*}
+        });*/
     }
 
 
@@ -430,14 +435,14 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
             if (onDeviceCallback != null) {
                 onDeviceCallback.onDeviceDisconnecting(neuroBLE);
             }
-            context.runOnUiThread(new Runnable() {
+            /*context.runOnUiThread(new Runnable() {
                 @Override
-                public void run() {
+                public void run() {*/
                     bluetoothGatt.close();
                     bluetoothGatt.disconnect();
                     neuroBLE = null;
-                }
-            });
+                /*}
+            });*/
         }
         values.clear();
     }
