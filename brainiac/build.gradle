@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android'
     gitUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android.git'
 
-    libraryVersion = '0.4'
+    libraryVersion = '0.5'
 
     developerId = 'neutrinosoftware'
     developerName = 'LTD Neutrino'
@@ -32,7 +32,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
-        versionName "0.4"
+        versionName "0.5"
     }
     buildTypes {
         release {

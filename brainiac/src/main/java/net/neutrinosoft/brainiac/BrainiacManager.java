@@ -71,6 +71,7 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
     private double averageBasicAlpha;
     private double averageBasicBeta;
     private BasicValues basicValues;
+    private ScanCallback scanCallback;
 
     /**
      * Register a callback to be invoked when fft data received.
@@ -217,6 +218,7 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
         fftValues.clear();
         if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                initScanCallback();
                 bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
             } else {
                 Log.d(TAG, "Location permission does not allowed");
@@ -224,6 +226,18 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
             }
         } else {
             bluetoothAdapter.startLeScan(this);
+        }
+    }
+
+    private void initScanCallback() {
+        if (scanCallback == null) {
+            scanCallback = new ScanCallback() {
+                @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    BluetoothDevice device = result.getDevice();
+                    onLeScan(device, 0, null);
+                }
+            };
         }
     }
 
@@ -764,13 +778,5 @@ public class BrainiacManager extends BluetoothGattCallback implements LeScanCall
         basicValues = new BasicValues(X0, Y0, X1p, X1m, Y1p, Y1m, X2p, X2m, Y2p, Y2m, X3p, X3m, Y3p, Y3m, X4p, X4m, Y4p, Y4m);
 
     }
-
-    private ScanCallback scanCallback = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            BluetoothDevice device = result.getDevice();
-            onLeScan(device, 0, null);
-        }
-    };
 
 }

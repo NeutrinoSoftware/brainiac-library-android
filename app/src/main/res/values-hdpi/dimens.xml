@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fragment_indicators_text_view_padding_left">1dp</dimen>
+    <dimen name="fragment_indicators_text_view_padding_right">1dp</dimen>
+</resources>
