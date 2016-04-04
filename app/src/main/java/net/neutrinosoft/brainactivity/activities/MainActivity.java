@@ -27,6 +27,8 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //throw new RuntimeException("Crashlytics test");
+
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
 
