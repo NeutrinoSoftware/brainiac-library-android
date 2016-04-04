@@ -5,6 +5,14 @@ android {
     compileSdkVersion 23
     buildToolsVersion "22.0.1"
 
+    signingConfigs {
+        release {
+            keyAlias 'brainiac'
+            keyPassword 'br@in1acl1br@ry'
+            storeFile file('../brainiac-library-android.jks')
+            storePassword 'br@in1acl1br@ry'
+        }
+    }
     defaultConfig {
         applicationId "net.neutrinosoft.brainactivity"
         minSdkVersion 18
@@ -12,12 +20,34 @@ android {
         versionCode 1
         versionName "0.3"
     }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        release {
+            release {
+                minifyEnabled true
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                signingConfig signingConfigs.release
 
+                ext.enableCrashlytics = true
+                ext.betaDistributionReleaseNotes = ""
+
+                ext.betaDistributionGroupAliases = "brainiac"
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 
 repositories {
     maven { url "https://jitpack.io" }
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
