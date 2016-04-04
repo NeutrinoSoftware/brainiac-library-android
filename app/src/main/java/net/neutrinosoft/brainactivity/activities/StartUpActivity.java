@@ -208,7 +208,6 @@ public class StartUpActivity extends FragmentActivity implements View.OnClickLis
 
         showConnectView();
 
-        throw new RuntimeException("Fabric Crashlytics Test");
     }
 
 
