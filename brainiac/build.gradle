@@ -1,6 +1,30 @@
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'brainiac'
+
+    publishedGroupId = 'net.neutrinosoft.brainiac'
+    libraryName = 'brainiac'
+    artifact = 'brainiac'
+
+    libraryDescription = 'The Brainiac library handles connections and data transfer between Braniac (alpha title) accessory and Android device.'
+
+    siteUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android'
+    gitUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android.git'
+
+    libraryVersion = '0.6'
+
+    developerId = 'neutrinosoftware'
+    developerName = 'LTD Neutrino'
+    developerEmail = 'movsesiv@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "22.0.1"
@@ -9,7 +33,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
-        versionName "0.3"
+        versionName "0.6"
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -38,3 +62,6 @@ dependencies {
     androidTestCompile 'com.android.support.test:runner:0.4.1'
     androidTestCompile 'com.android.support.test:rules:0.4.1'
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
