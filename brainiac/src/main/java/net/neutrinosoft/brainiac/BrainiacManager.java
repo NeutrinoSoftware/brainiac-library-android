@@ -1,6 +1,5 @@
 package net.neutrinosoft.brainiac;
 
-import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothAdapter.LeScanCallback;
@@ -13,10 +12,7 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -25,6 +21,7 @@ import net.neutrinosoft.brainiac.callback.OnIndicatorsStateChangedCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveDataCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveFftDataCallback;
 import net.neutrinosoft.brainiac.callback.OnScanCallback;
+import net.neutrinosoft.brainiac.utils.PermissionsUtils;
 
 import org.jtransforms.fft.DoubleFFT_1D;
 
@@ -50,7 +47,7 @@ public class BrainiacManager extends BluetoothGattCallback {
     private static ArrayList<Value> values = new ArrayList<>();
     private static ArrayList<FftValue[]> fftValues = new ArrayList<>();
     private static int batteryLevel = 0;
-    private Context context;
+    private Activity context;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothDevice neuroBLE;
     private BluetoothGatt bluetoothGatt;
@@ -108,14 +105,14 @@ public class BrainiacManager extends BluetoothGattCallback {
      * @param context - application context
      * @return instance of BrainiacManager
      */
-    public static BrainiacManager getBrainiacManager(Context context) {
+    public static BrainiacManager getBrainiacManager(Activity context) {
         if (singleton == null) {
             singleton = new BrainiacManager(context);
         }
         return singleton;
     }
 
-    private BrainiacManager(Context context) {
+    private BrainiacManager(Activity context) {
         this.context = context;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
@@ -219,32 +216,44 @@ public class BrainiacManager extends BluetoothGattCallback {
         values.clear();
         fftValues.clear();
         if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                if (scanCallback == null) {
-                    scanCallback = new ScanCallback() {
-                        @Override
-                        public void onScanResult(int callbackType, ScanResult result) {
-                            BluetoothDevice device = result.getDevice();
-                            onDeviceFound(device);
-                        }
-                    };
+            if (PermissionsUtils.isCoarseLoactionAllowed(context)) {
+                initScanCallback();
+                if (bluetoothAdapter != null) {
+                    bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
                 }
-                bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
             } else {
                 Log.d(TAG, "Location permission does not allowed");
-                Toast.makeText(context, "Location permission does not allowed", Toast.LENGTH_SHORT).show();
+                Toast toast = Toast.makeText(context, "Location permission does not allowed", Toast.LENGTH_SHORT);
                 stopScan();
             }
         } else {
-            if (leScanCallback == null) {
-                leScanCallback = new LeScanCallback() {
-                    @Override
-                    public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-                        onDeviceFound(device);
-                    }
-                };
+            initLeScanCallback();
+            if (bluetoothAdapter != null) {
+                bluetoothAdapter.startLeScan(leScanCallback);
             }
-            bluetoothAdapter.startLeScan(leScanCallback);
+        }
+    }
+
+    private void initScanCallback() {
+        if (scanCallback == null) {
+            scanCallback = new ScanCallback() {
+                @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    BluetoothDevice device = result.getDevice();
+                    onDeviceFound(device);
+                }
+            };
+        }
+    }
+
+    private void initLeScanCallback() {
+        if (leScanCallback == null) {
+            leScanCallback = new LeScanCallback() {
+                @Override
+                public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+                    onDeviceFound(device);
+                }
+            };
         }
     }
 
@@ -304,12 +313,12 @@ public class BrainiacManager extends BluetoothGattCallback {
         if (onDeviceCallback != null) {
             onDeviceCallback.onDeviceConnecting(neuroBLE);
         }
-        /*context.runOnUiThread(new Runnable() {
+        context.runOnUiThread(new Runnable() {
             @Override
-            public void run() {*/
-                neuroBLE.connectGatt(context, false, BrainiacManager.this);
-            /*}
-        });*/
+            public void run() {
+        neuroBLE.connectGatt(context, false, BrainiacManager.this);
+            }
+        });
     }
 
 
@@ -450,14 +459,14 @@ public class BrainiacManager extends BluetoothGattCallback {
             if (onDeviceCallback != null) {
                 onDeviceCallback.onDeviceDisconnecting(neuroBLE);
             }
-            /*context.runOnUiThread(new Runnable() {
+            context.runOnUiThread(new Runnable() {
                 @Override
-                public void run() {*/
-                    bluetoothGatt.close();
-                    bluetoothGatt.disconnect();
-                    neuroBLE = null;
-                /*}
-            });*/
+                public void run() {
+            bluetoothGatt.close();
+            bluetoothGatt.disconnect();
+            neuroBLE = null;
+                }
+            });
         }
         values.clear();
     }
