@@ -28,6 +28,15 @@ android {
     compileSdkVersion 23
     buildToolsVersion "22.0.1"
 
+    signingConfigs {
+        release {
+            keyAlias 'brainiac'
+            keyPassword 'br@in1acl1br@ry'
+            storeFile file('../brainiac-library-android.jks')
+            storePassword 'br@in1acl1br@ry'
+        }
+    }
+
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 23
@@ -35,10 +44,27 @@ android {
         versionName "0.6"
     }
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
+        release {
+            release {
+                minifyEnabled true
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                signingConfig signingConfigs.release
+
+                ext.enableCrashlytics = true
+                ext.betaDistributionReleaseNotes = ""
+
+                ext.betaDistributionGroupAliases = "brainiac"
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
