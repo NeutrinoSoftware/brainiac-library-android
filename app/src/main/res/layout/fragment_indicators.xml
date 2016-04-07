@@ -30,8 +30,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
                 android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
+                android:paddingLeft="@dimen/fragment_indicators_text_view_padding_left"
+                android:paddingRight="@dimen/fragment_indicators_text_view_padding_right"
                 android:text="Sleep"
                 android:textSize="11sp" />
 
@@ -41,8 +41,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
                 android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
+                android:paddingLeft="@dimen/fragment_indicators_text_view_padding_left"
+                android:paddingRight="@dimen/fragment_indicators_text_view_padding_right"
                 android:text="Deep\nrelaxation"
                 android:textSize="11sp" />
 
@@ -52,8 +52,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
                 android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
+                android:paddingLeft="@dimen/fragment_indicators_text_view_padding_left"
+                android:paddingRight="@dimen/fragment_indicators_text_view_padding_right"
                 android:text="Relaxation"
                 android:textSize="11sp" />
 
@@ -63,8 +63,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
                 android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
+                android:paddingLeft="@dimen/fragment_indicators_text_view_padding_left"
+                android:paddingRight="@dimen/fragment_indicators_text_view_padding_right"
                 android:text="Normal\nactivation"
                 android:textSize="11sp" />
 
@@ -74,8 +74,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/border"
                 android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
+                android:paddingLeft="@dimen/fragment_indicators_text_view_padding_left"
+                android:paddingRight="@dimen/fragment_indicators_text_view_padding_right"
                 android:text="Excitement"
                 android:textSize="11sp" />
 
