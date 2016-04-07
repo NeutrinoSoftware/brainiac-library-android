@@ -2,7 +2,6 @@ package net.neutrinosoft.brainiac;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothAdapter.LeScanCallback;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -10,18 +9,15 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
+import net.neutrinosoft.brainiac.bluetooth.DefaultBluetoothProvider;
 import net.neutrinosoft.brainiac.callback.OnDeviceCallback;
 import net.neutrinosoft.brainiac.callback.OnIndicatorsStateChangedCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveDataCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveFftDataCallback;
 import net.neutrinosoft.brainiac.callback.OnScanCallback;
-import net.neutrinosoft.brainiac.utils.PermissionsUtils;
 
 import org.jtransforms.fft.DoubleFFT_1D;
 
@@ -48,7 +44,7 @@ public class BrainiacManager extends BluetoothGattCallback {
     private static ArrayList<FftValue[]> fftValues = new ArrayList<>();
     private static int batteryLevel = 0;
     private Activity context;
-    private BluetoothAdapter bluetoothAdapter;
+    private DefaultBluetoothProvider bluetoothProvider;
     private BluetoothDevice neuroBLE;
     private BluetoothGatt bluetoothGatt;
     private OnReceiveFftDataCallback onReceiveFftDataCallback;
@@ -69,8 +65,6 @@ public class BrainiacManager extends BluetoothGattCallback {
     private double averageBasicAlpha;
     private double averageBasicBeta;
     private BasicValues basicValues;
-    private ScanCallback scanCallback;
-    private LeScanCallback leScanCallback;
 
     /**
      * Register a callback to be invoked when fft data received.
@@ -114,7 +108,7 @@ public class BrainiacManager extends BluetoothGattCallback {
 
     private BrainiacManager(Activity context) {
         this.context = context;
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothProvider = new DefaultBluetoothProvider(context, BluetoothAdapter.getDefaultAdapter());
     }
 
     /**
@@ -215,46 +209,40 @@ public class BrainiacManager extends BluetoothGattCallback {
         }
         values.clear();
         fftValues.clear();
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
-            if (PermissionsUtils.isCoarseLoactionAllowed(context)) {
-                initScanCallback();
-                if (bluetoothAdapter != null) {
-                    bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
-                }
-            } else {
-                Log.d(TAG, "Location permission does not allowed");
-                Toast toast = Toast.makeText(context, "Location permission does not allowed", Toast.LENGTH_SHORT);
-                stopScan();
-            }
-        } else {
-            initLeScanCallback();
-            if (bluetoothAdapter != null) {
-                bluetoothAdapter.startLeScan(leScanCallback);
-            }
-        }
-    }
 
-    private void initScanCallback() {
-        if (scanCallback == null) {
-            scanCallback = new ScanCallback() {
-                @Override
-                public void onScanResult(int callbackType, ScanResult result) {
-                    BluetoothDevice device = result.getDevice();
-                    onDeviceFound(device);
-                }
-            };
-        }
-    }
+        bluetoothProvider.startScan();
 
-    private void initLeScanCallback() {
-        if (leScanCallback == null) {
-            leScanCallback = new LeScanCallback() {
-                @Override
-                public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-                    onDeviceFound(device);
-                }
-            };
-        }
+        bluetoothProvider.setOnDeviceCallback(new OnDeviceCallback() {
+            @Override
+            public void onDeviceFound(BluetoothDevice device) {
+                deviceFound(device);
+            }
+
+            @Override
+            public void onDeviceConnected(BluetoothDevice device) {
+
+            }
+
+            @Override
+            public void onDeviceConnecting(BluetoothDevice device) {
+
+            }
+
+            @Override
+            public void onDeviceDisconnected(BluetoothDevice device) {
+
+            }
+
+            @Override
+            public void onDeviceConnectionError(BluetoothDevice device) {
+
+            }
+
+            @Override
+            public void onDeviceDisconnecting(BluetoothDevice device) {
+
+            }
+        });
     }
 
     /**
@@ -275,7 +263,20 @@ public class BrainiacManager extends BluetoothGattCallback {
         return isTestMode;
     }
 
-    public void onDeviceFound(BluetoothDevice bluetoothDevice) {
+    /**
+     * Stops an ongoing Bluetooth LE device scan.
+     */
+    public void stopScan() {
+        if (onScanCallback != null) {
+            onScanCallback.onScanStop();
+        }
+        if (bluetoothProvider != null) {
+            bluetoothProvider.stopScan();
+        }
+
+    }
+
+    private void deviceFound(BluetoothDevice bluetoothDevice) {
         String deviceName = bluetoothDevice.getName();
         Log.d(TAG, "onLeScan()");
         Log.d(TAG, deviceName);
@@ -289,23 +290,6 @@ public class BrainiacManager extends BluetoothGattCallback {
             stopScan();
             connectToDevice();
         }
-    }
-
-    /**
-     * Stops an ongoing Bluetooth LE device scan.
-     */
-    public void stopScan() {
-        if (onScanCallback != null) {
-            onScanCallback.onScanStop();
-        }
-        if (bluetoothAdapter != null) {
-            if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
-                bluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
-            } else {
-                bluetoothAdapter.stopLeScan(leScanCallback);
-            }
-        }
-
     }
 
     private void connectToDevice() {
