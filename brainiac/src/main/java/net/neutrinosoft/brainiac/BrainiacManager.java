@@ -49,6 +49,7 @@ public class BrainiacManager extends BluetoothGattCallback {
     private BluetoothGatt bluetoothGatt;
     private OnReceiveFftDataCallback onReceiveFftDataCallback;
     private OnDeviceCallback onDeviceCallback;
+    private OnDeviceCallback onDeviceFoundCallback;
     private OnScanCallback onScanCallback;
     private OnIndicatorsStateChangedCallback onIndicatorsStateChangedCallback;
     private boolean isTestMode;
@@ -65,6 +66,18 @@ public class BrainiacManager extends BluetoothGattCallback {
     private double averageBasicAlpha;
     private double averageBasicBeta;
     private BasicValues basicValues;
+
+    public void setValues(ArrayList<Value> values) {
+        this.values = values;
+    }
+
+    public void setBluetoothGatt(BluetoothGatt bluetoothGatt) {
+        this.bluetoothGatt = bluetoothGatt;
+    }
+
+    public OnDeviceCallback getOnDeviceFoundCallback() {
+        return onDeviceFoundCallback;
+    }
 
     /**
      * Register a callback to be invoked when fft data received.
@@ -212,7 +225,12 @@ public class BrainiacManager extends BluetoothGattCallback {
 
         bluetoothProvider.startScan();
 
-        bluetoothProvider.setOnDeviceCallback(new OnDeviceCallback() {
+        initOnDeviceFoundCallback();
+        bluetoothProvider.setOnDeviceCallback(onDeviceFoundCallback);
+    }
+
+    private void initOnDeviceFoundCallback() {
+        onDeviceFoundCallback = new OnDeviceCallback() {
             @Override
             public void onDeviceFound(BluetoothDevice device) {
                 deviceFound(device);
@@ -242,7 +260,7 @@ public class BrainiacManager extends BluetoothGattCallback {
             public void onDeviceDisconnecting(BluetoothDevice device) {
 
             }
-        });
+        };
     }
 
     /**
@@ -300,7 +318,7 @@ public class BrainiacManager extends BluetoothGattCallback {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-        neuroBLE.connectGatt(context, false, BrainiacManager.this);
+                neuroBLE.connectGatt(context, false, BrainiacManager.this);
             }
         });
     }
@@ -396,13 +414,13 @@ public class BrainiacManager extends BluetoothGattCallback {
             secondValue.setChannel2(Math.floor(K * BitUtils.getShortFromBigBytes(data[14], data[15])));
             secondValue.setChannel3(Math.floor(K * BitUtils.getShortFromBigBytes(data[16], data[17])));
             secondValue.setChannel4(Math.floor(K * BitUtils.getShortFromBigBytes(data[18], data[19])));
-            BrainiacManager.values.add(secondValue);
+            values.add(secondValue);
 
             if (onReceiveDataCallback != null) {
                 onReceiveDataCallback.onReceiveData(firstValue);
                 onReceiveDataCallback.onReceiveData(secondValue);
             }
-            if (onReceiveFftDataCallback != null && (BrainiacManager.values.size() % 256) == 0) {
+            if (onReceiveFftDataCallback != null && (values.size() % 256) == 0) {
                 onReceiveFftDataCallback.onReceiveData(getFftData());
             }
         } else if (characteristic.getUuid().equals(UUID.fromString(BATTERY_LEVEL_CHARACTERISTIC_UUID))) {
@@ -446,9 +464,9 @@ public class BrainiacManager extends BluetoothGattCallback {
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-            bluetoothGatt.close();
-            bluetoothGatt.disconnect();
-            neuroBLE = null;
+                    bluetoothGatt.close();
+                    bluetoothGatt.disconnect();
+                    neuroBLE = null;
                 }
             });
         }
@@ -523,7 +541,9 @@ public class BrainiacManager extends BluetoothGattCallback {
 
     public void disableIndicators() {
         if (onIndicatorsStateChangedCallback != null) {
-            handler.removeCallbacks(indicatorsCallBack);
+            if (handler != null) {
+                handler.removeCallbacks(indicatorsCallBack);
+            }
         }
     }
 

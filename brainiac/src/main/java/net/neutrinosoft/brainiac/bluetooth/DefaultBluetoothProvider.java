@@ -45,9 +45,7 @@ public class DefaultBluetoothProvider implements BluetoothProvider {
                 }
                 stopScan();
             }
-        } else
-
-        {
+        } else {
             initLeScanCallback();
             if (bluetoothAdapter != null) {
                 bluetoothAdapter.startLeScan(leScanCallback);
@@ -91,7 +89,16 @@ public class DefaultBluetoothProvider implements BluetoothProvider {
     }
 
     private void onDeviceFound(BluetoothDevice bluetoothDevice) {
-        onDeviceCallback.onDeviceFound(bluetoothDevice);
+        if (onDeviceCallback != null) {
+            onDeviceCallback.onDeviceFound(bluetoothDevice);
+        }
     }
 
+    public ScanCallback getScanCallback() {
+        return scanCallback;
+    }
+
+    public BluetoothAdapter.LeScanCallback getLeScanCallback() {
+        return leScanCallback;
+    }
 }
