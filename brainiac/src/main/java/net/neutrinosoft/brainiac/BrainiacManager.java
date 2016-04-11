@@ -67,18 +67,6 @@ public class BrainiacManager extends BluetoothGattCallback {
     private double averageBasicBeta;
     private BasicValues basicValues;
 
-    public void setValues(ArrayList<Value> values) {
-        this.values = values;
-    }
-
-    public void setBluetoothGatt(BluetoothGatt bluetoothGatt) {
-        this.bluetoothGatt = bluetoothGatt;
-    }
-
-    public OnDeviceCallback getOnDeviceFoundCallback() {
-        return onDeviceFoundCallback;
-    }
-
     /**
      * Register a callback to be invoked when fft data received.
      *
@@ -438,20 +426,6 @@ public class BrainiacManager extends BluetoothGattCallback {
         return batteryLevel;
     }
 
-    private static int average(List<Integer> list) {
-        // 'average' is undefined if there are no elements in the list.
-        if (list == null || list.isEmpty())
-            return 0;
-        // Calculate the summation of the elements in the list
-        long sum = 0;
-        int n = list.size();
-        // Iterating manually is faster than using an enhanced for loop.
-        for (int i = 0; i < n; i++)
-            sum += list.get(i);
-        // We don't want to perform an integer division, so the cast is mandatory.
-        return (int) (sum / n);
-    }
-
     /**
      * Release all using resources
      */
@@ -502,7 +476,7 @@ public class BrainiacManager extends BluetoothGattCallback {
                 if (onReceiveDataCallback != null) {
                     onReceiveDataCallback.onReceiveData(value);
                 }
-                if (onReceiveFftDataCallback != null && (BrainiacManager.values.size() % 256) == 0) {
+                if (onReceiveFftDataCallback != null && (values.size() % 256) == 0) {
                     onReceiveFftDataCallback.onReceiveData(getFftData());
                 }
                 handler.postDelayed(this, 4);
@@ -610,10 +584,10 @@ public class BrainiacManager extends BluetoothGattCallback {
                 Log.d(TAG, "beta " + fftValues.get(i)[2].getData3());
             }
 
-            double averageAlpha2 = doubleAverage(alpha2);
-            double averageAlpha4 = doubleAverage(alpha4);
-            double averageBeta1 = doubleAverage(beta1);
-            double averageBeta3 = doubleAverage(beta3);
+            double averageAlpha2 = average(alpha2);
+            double averageAlpha4 = average(alpha4);
+            double averageBeta1 = average(beta1);
+            double averageBeta3 = average(beta3);
             averages[0] = (averageAlpha2 + averageAlpha4) / 2;
             averages[1] = (averageBeta1 + averageBeta3) / 2;
             return averages;
@@ -621,7 +595,7 @@ public class BrainiacManager extends BluetoothGattCallback {
         return null;
     }
 
-    private double doubleAverage(List<Integer> array) {
+    private double average(List<Integer> array) {
         if (array == null || array.isEmpty()) {
             return 0;
         }

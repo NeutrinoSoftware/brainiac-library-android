@@ -41,9 +41,6 @@ public class DefaultBluetoothProviderTest {
     @Mock
     private BluetoothAdapter bluetoothAdapter;
 
-    //@Captor
-    //private ArgumentCaptor<ScanCallback>
-
     @Before
     public void setUp(){
         MockitoAnnotations.initMocks(this);
@@ -74,6 +71,7 @@ public class DefaultBluetoothProviderTest {
     @Test
     public void stopScanAndroid5() throws Exception {
         DefaultBluetoothProvider bluetoothProvider = new DefaultBluetoothProvider(new Activity(), bluetoothAdapter);
+        BluetoothLeScanner bluetoothLeScanner = mock(BluetoothLeScanner.class);
         when(bluetoothAdapter.getBluetoothLeScanner()).thenReturn(mock(BluetoothLeScanner.class));
 
         setSdkVersion(Build.VERSION_CODES.LOLLIPOP);
@@ -111,27 +109,6 @@ public class DefaultBluetoothProviderTest {
         bluetoothProvider.startScan();
     }
 
-    static void setSdkVersion(int version) {
-        try {
-            setFinalStatic(Build.VERSION.class.getDeclaredField("SDK_INT"), version);
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void setFinalStatic(Field field, Object newValue) throws Exception {
-        field.setAccessible(true);
-        // remove final modifier from field
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, newValue);
-    }
-
     @Test
     public void leScanCallbackAndroid4() throws Exception {
         DefaultBluetoothProvider bluetoothProvider = new DefaultBluetoothProvider(new Activity(), bluetoothAdapter);
@@ -144,7 +121,7 @@ public class DefaultBluetoothProviderTest {
         bluetoothProvider.setOnDeviceCallback(onDeviceCallback);
         bluetoothProvider.startScan();
         BluetoothDevice bluetoothDevice = mock(BluetoothDevice.class);
-        bluetoothProvider.getLeScanCallback().onLeScan(bluetoothDevice, 1, new byte[5]);
+        ((BluetoothAdapter.LeScanCallback) getDefaultBluetoothAdapterPrivateField(bluetoothProvider, "leScanCallback")).onLeScan(bluetoothDevice, 1, new byte[5]);
     }
 
     @Test
@@ -159,6 +136,27 @@ public class DefaultBluetoothProviderTest {
         bluetoothProvider.setOnDeviceCallback(onDeviceCallback);
         bluetoothProvider.startScan();
         ScanResult scanResult = mock(ScanResult.class);
-        bluetoothProvider.getScanCallback().onScanResult(1, scanResult);
+        ((ScanCallback) getDefaultBluetoothAdapterPrivateField(bluetoothProvider, "scanCallback")).onScanResult(1, scanResult);
+    }
+
+    private static void setSdkVersion(int version) {
+        try {
+            TestUtils.setFinalStatic(Build.VERSION.class.getDeclaredField("SDK_INT"), version);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Object getDefaultBluetoothAdapterPrivateField(DefaultBluetoothProvider defaultBluetoothProvider, String name) {
+        try {
+            return TestUtils.getPrivateField(defaultBluetoothProvider, DefaultBluetoothProvider.class.getDeclaredField(name));
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

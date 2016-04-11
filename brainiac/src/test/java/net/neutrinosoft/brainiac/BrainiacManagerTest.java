@@ -17,17 +17,13 @@ import net.neutrinosoft.brainiac.callback.OnScanCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static junit.framework.Assert.assertSame;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,23 +57,12 @@ public class BrainiacManagerTest {
         BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
         OnScanCallback onScanCallback = mock(OnScanCallback.class);
         brainiacManager.setOnScanCallback(onScanCallback);
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return null;
-            }
-        }).when(mock(Activity.class)).runOnUiThread(Mockito.<Runnable>any());
-
         brainiacManager.startScan();
         BluetoothDevice bluetoothDevice = mock(BluetoothDevice.class);
         when(bluetoothDevice.getName()).thenReturn("NeuroBLE");
         OnDeviceCallback onDeviceCallback = mock(OnDeviceCallback.class);
         brainiacManager.setOnDeviceCallback(onDeviceCallback);
-        brainiacManager.getOnDeviceFoundCallback().onDeviceFound(bluetoothDevice);
-
-
+        ((OnDeviceCallback) getBrainiacManagerPrivateField(brainiacManager, "onDeviceFoundCallback")).onDeviceFound(bluetoothDevice);
     }
 
     @Test
@@ -140,7 +125,7 @@ public class BrainiacManagerTest {
         List<BluetoothGattDescriptor> bluetoothGattDescriptors = new ArrayList<>();
         bluetoothGattDescriptors.add(mock(BluetoothGattDescriptor.class));
         when(bluetoothGattCharacteristic.getDescriptors()).thenReturn(bluetoothGattDescriptors);
-        brainiacManager.setBluetoothGatt(bluetoothGatt);
+        setBrainiacManagerPrivateField(brainiacManager, "bluetoothGatt", bluetoothGatt);
         brainiacManager.onServicesDiscovered(bluetoothGatt, BluetoothGatt.GATT_SUCCESS);
     }
 
@@ -168,7 +153,7 @@ public class BrainiacManagerTest {
         for (int i = 0; i < 2049; i++) {
             values.add(new Value());
         }
-        brainiacManager.setValues(values);
+        setBrainiacManagerPrivateField(brainiacManager, "values", values);
         OnReceiveDataCallback onReceiveDataCallback = mock(OnReceiveDataCallback.class);
         OnReceiveFftDataCallback onReceiveFftDataCallback = mock(OnReceiveFftDataCallback.class);
         brainiacManager.setOnReceiveDataCallback(onReceiveDataCallback);
@@ -187,7 +172,7 @@ public class BrainiacManagerTest {
         for (int i = 0; i < 254; i++) {
             values.add(new Value());
         }
-        brainiacManager.setValues(values);
+        setBrainiacManagerPrivateField(brainiacManager, "values", values);
         OnReceiveFftDataCallback onReceiveFftDataCallback = mock(OnReceiveFftDataCallback.class);
         brainiacManager.setOnReceiveFftDataCallback(onReceiveFftDataCallback);
         brainiacManager.onCharacteristicChanged(bluetoothGatt, bluetoothGattCharacteristic);
@@ -200,5 +185,73 @@ public class BrainiacManagerTest {
         BluetoothGattCharacteristic bluetoothGattCharacteristic = mock(BluetoothGattCharacteristic.class);
         when(bluetoothGattCharacteristic.getUuid()).thenReturn(UUID.fromString(BATTERY_LEVEL_CHARACTERISTIC_UUID));
         brainiacManager.onCharacteristicChanged(bluetoothGatt, bluetoothGattCharacteristic);
+    }
+
+    @Test
+    public void isConnected() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        brainiacManager.isConnected();
+    }
+
+    @Test
+    public void isInTestMode() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        brainiacManager.isInTestMode();
+    }
+
+    @Test
+    public void getBatteryLevel() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        brainiacManager.getBatteryLevel();
+    }
+
+    @Test
+    public void release() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        OnDeviceCallback onDeviceCallback = mock(OnDeviceCallback.class);
+        BluetoothGatt bluetoothGatt = mock(BluetoothGatt.class);
+        brainiacManager.setOnDeviceCallback(onDeviceCallback);
+        setBrainiacManagerPrivateField(brainiacManager, "bluetoothGatt", bluetoothGatt);
+        brainiacManager.release();
+    }
+
+    @Test
+    public void startTest() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        OnReceiveDataCallback onReceiveDataCallback = mock(OnReceiveDataCallback.class);
+        OnReceiveFftDataCallback onReceiveFftDataCallback = mock(OnReceiveFftDataCallback.class);
+        brainiacManager.setOnReceiveDataCallback(onReceiveDataCallback);
+        brainiacManager.setOnReceiveFftDataCallback(onReceiveFftDataCallback);
+        ArrayList<Value> values = new ArrayList<Value>();
+        for (int i = 0; i < 255; i++) {
+            values.add(new Value());
+        }
+        setBrainiacManagerPrivateField(brainiacManager, "values", values);
+        brainiacManager.startTest(3);
+        Runnable testCallback = (Runnable) getBrainiacManagerPrivateField(brainiacManager, "testCallback");
+        testCallback.run();
+    }
+
+    @Test
+    public void stopTest() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        brainiacManager.stopTest();
+    }
+
+    private static void setBrainiacManagerPrivateField(BrainiacManager brainiacManager, String name, Object value) {
+        try {
+            TestUtils.setPrivateField(brainiacManager, BrainiacManager.class.getDeclaredField(name), value);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Object getBrainiacManagerPrivateField(BrainiacManager brainiacManager, String name) {
+        try {
+            return TestUtils.getPrivateField(brainiacManager, BrainiacManager.class.getDeclaredField(name));
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

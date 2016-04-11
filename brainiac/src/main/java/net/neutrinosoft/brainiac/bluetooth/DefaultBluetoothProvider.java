@@ -94,11 +94,4 @@ public class DefaultBluetoothProvider implements BluetoothProvider {
         }
     }
 
-    public ScanCallback getScanCallback() {
-        return scanCallback;
-    }
-
-    public BluetoothAdapter.LeScanCallback getLeScanCallback() {
-        return leScanCallback;
-    }
 }
