@@ -13,7 +13,6 @@
         android:required="true"/>
 
     <application
-        android:name=".BrainiacApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -32,9 +31,6 @@
             android:name=".activities.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"/>
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="c3a67f5a7f20ced3ce62e0d9a7c28d77279b639b" />
     </application>
 
 </manifest>
