@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'jacoco'
 
 ext {
     bintrayRepo = 'maven'
@@ -29,27 +28,45 @@ android {
     compileSdkVersion 23
     buildToolsVersion "22.0.1"
 
+    signingConfigs {
+        release {
+            keyAlias 'brainiac'
+            keyPassword 'br@in1acl1br@ry'
+            storeFile file('../brainiac-library-android.jks')
+            storePassword 'br@in1acl1br@ry'
+        }
+    }
+
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
         versionName "0.6.2"
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         debug {
-            testCoverageEnabled = true
+            minifyEnabled false
+            signingConfig signingConfigs.release
         }
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            release {
+                minifyEnabled true
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                signingConfig signingConfigs.release
+
+                ext.enableCrashlytics = true
+                ext.betaDistributionReleaseNotes = ""
+
+                ext.betaDistributionGroupAliases = "brainiac"
+            }
         }
     }
     testOptions {
         unitTests.returnDefaultValues = true
     }
-    lintOptions {
-        abortOnError false
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
@@ -63,9 +80,6 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4-rule-agent:1.6.4'
     testCompile 'org.powermock:powermock-module-junit4-rule:1.6.4'
     testCompile 'org.powermock:powermock-module-junit4:1.6.4'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
 }
 
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
