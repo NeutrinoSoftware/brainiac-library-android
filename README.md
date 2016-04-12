@@ -20,7 +20,7 @@ Android 4.3+
 
 Gradle: 
 ```groovy
-compile 'net.neutrinosoft.brainiac:brainiac:0.6.2'
+compile 'net.neutrinosoft.brainiac:brainiac:0.6.3'
 ```
 
 ## 2. Initialize BrainiacManager.

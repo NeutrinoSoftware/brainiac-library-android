@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'jacoco'
 
 ext {
     bintrayRepo = 'maven'
@@ -14,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android'
     gitUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android.git'
 
-    libraryVersion = '0.6.2'
+    libraryVersion = '0.6.3'
 
     developerId = 'neutrinosoftware'
     developerName = 'LTD Neutrino'
@@ -33,8 +32,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
-        versionName "0.6.2"
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        versionName "0.6.3"
     }
     buildTypes {
         debug {
@@ -65,7 +63,6 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4:1.6.4'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
 }
 
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
