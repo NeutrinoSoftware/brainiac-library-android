@@ -1,6 +1,8 @@
 package net.neutrinosoft.brainiac;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 public class TestUtils {
@@ -27,6 +29,18 @@ public class TestUtils {
         try {
             return field.get(object);
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Object invokePrivateMethod(Object object, Method method, Object... args) {
+        method.setAccessible(true);
+        try {
+            return method.invoke(object, args);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;

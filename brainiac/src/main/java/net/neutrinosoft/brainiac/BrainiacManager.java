@@ -56,7 +56,7 @@ public class BrainiacManager extends BluetoothGattCallback {
 
     private OnReceiveDataCallback onReceiveDataCallback;
     private Handler handler;
-    private Runnable testCallback, indicatorsCallBack;
+    private Runnable testCallback, indicatorsCallBack, enableIndicatorsCallback;
 
     private final static String TRANSFER_CHARACTERISTIC_UUID = "6E400002-B534-f393-67a9-e50e24dcca9e";
     private final static String BATTERY_LEVEL_CHARACTERISTIC_UUID = "00000000-0000-0000-0000-000000000000";
@@ -501,12 +501,13 @@ public class BrainiacManager extends BluetoothGattCallback {
     public boolean enableIndicators() {
         if (fftValues.size() > INDICATOR_PERIOD) {
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
+            enableIndicatorsCallback = new Runnable() {
                 @Override
                 public void run() {
                     startIndicators();
                 }
-            }, BASIC_VALUES_PERIOD * 1000);
+            };
+            handler.postDelayed(enableIndicatorsCallback, BASIC_VALUES_PERIOD * 1000);
             return true;
         } else {
             return false;
@@ -538,6 +539,10 @@ public class BrainiacManager extends BluetoothGattCallback {
 
     private void initIndicators() {
         double[] averages = defineBasicAverageValuesForRange(BASIC_VALUES_PERIOD);
+
+        if (averages == null) {
+            return;
+        }
 
         averageBasicAlpha = averages[0];
         averageBasicBeta = averages[1];
@@ -635,7 +640,7 @@ public class BrainiacManager extends BluetoothGattCallback {
         if ((0 < X && X <= 0.7 * X0 && Y0 < Y) || (1.3 * X0 < X && X <= 1.6 * X0 && Y >= 1.25 * Y0)) {
             colors.add("red1");
         }
-        if (X > 1.6 * X0 && 0.75 * 0 < Y && Y <= Y0) {
+        if (X > 1.6 * X0 && 0 < Y && Y <= Y0) {
             colors.add("red2");
         }
 
@@ -650,7 +655,7 @@ public class BrainiacManager extends BluetoothGattCallback {
         double Y0 = basicValues.getY0();
         double X1p = basicValues.getX1p();
         double X1m = basicValues.getX1m();
-        double Y1p = basicValues.getX1p();
+        double Y1p = basicValues.getY1p();
         double Y1m = basicValues.getY1m();
         double X2p = basicValues.getX2p();
         double X2m = basicValues.getX2m();

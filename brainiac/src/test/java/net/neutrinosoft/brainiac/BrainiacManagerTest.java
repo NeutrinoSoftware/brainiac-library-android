@@ -16,8 +16,11 @@ import net.neutrinosoft.brainiac.callback.OnScanCallback;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,8 @@ import static junit.framework.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(BrainiacManager.class)
 public class BrainiacManagerTest {
 
     @Mock
@@ -238,6 +243,394 @@ public class BrainiacManagerTest {
         brainiacManager.stopTest();
     }
 
+    @Test
+    public void enableIndicatorsTrue() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        List<FftValue> fftValues = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            fftValues.add(new FftValue());
+        }
+        setBrainiacManagerPrivateField(brainiacManager, "fftValues", fftValues);
+        brainiacManager.enableIndicators();
+        ((Runnable) getBrainiacManagerPrivateField(brainiacManager, "enableIndicatorsCallback")).run();
+        OnIndicatorsStateChangedCallback onIndicatorsStateChangedCallback = mock(OnIndicatorsStateChangedCallback.class);
+        brainiacManager.setOnIndicatorsStateChangedCallback(onIndicatorsStateChangedCallback);
+        fftValues.clear();
+        for (int i = 0; i < 5; i++) {
+            fftValues.add(new FftValue());
+        }
+        ((Runnable) getBrainiacManagerPrivateField(brainiacManager, "indicatorsCallBack")).run();
+    }
+
+    @Test
+    public void enableIndicatorsFalse() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        brainiacManager.enableIndicators();
+    }
+
+    @Test
+    public void disableIndicators() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        OnIndicatorsStateChangedCallback onIndicatorsStateChangedCallback = mock(OnIndicatorsStateChangedCallback.class);
+        brainiacManager.setOnIndicatorsStateChangedCallback(onIndicatorsStateChangedCallback);
+        android.os.Handler handler = new android.os.Handler();
+        setBrainiacManagerPrivateField(brainiacManager, "handler", handler);
+        brainiacManager.disableIndicators();
+    }
+
+    @Test
+    public void defineBasicAverageValuesForRangeCounterNullChannel1() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        ArrayList<FftValue[]> fftValues = new ArrayList<>();
+        FftValue[] fft = new FftValue[4];
+        FftValue fftValue = new FftValue();
+        fftValue.setData1(1);
+        fftValue.setData2(1);
+        fftValue.setData3(1);
+        fftValue.setCounter(1);
+        fft[0] = new FftValue();
+        fft[1] = fftValue;
+        fft[2] = fftValue;
+        fft[3] = fftValue;
+        for (int i = 0; i < 15; i++) {
+            fftValues.add(fft);
+        }
+        setBrainiacManagerPrivateField(brainiacManager, "fftValues", fftValues);
+        brainiacManager.enableIndicators();
+        ((Runnable) getBrainiacManagerPrivateField(brainiacManager, "enableIndicatorsCallback")).run();
+    }
+
+    @Test
+    public void defineBasicAverageValuesForRangeCounterNullChannel2() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        ArrayList<FftValue[]> fftValues = new ArrayList<>();
+        FftValue[] fft = new FftValue[4];
+        FftValue fftValue = new FftValue();
+        fftValue.setData1(1);
+        fftValue.setData2(1);
+        fftValue.setData3(1);
+        fftValue.setCounter(1);
+        fft[0] = fftValue;
+        fft[1] = new FftValue();
+        fft[2] = fftValue;
+        fft[3] = fftValue;
+        for (int i = 0; i < 15; i++) {
+            fftValues.add(fft);
+        }
+        setBrainiacManagerPrivateField(brainiacManager, "fftValues", fftValues);
+        brainiacManager.enableIndicators();
+        ((Runnable) getBrainiacManagerPrivateField(brainiacManager, "enableIndicatorsCallback")).run();
+    }
+
+    @Test
+    public void defineBasicAverageValuesForRangeCounterNullChannel3() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        ArrayList<FftValue[]> fftValues = new ArrayList<>();
+        FftValue[] fft = new FftValue[4];
+        FftValue fftValue = new FftValue();
+        fftValue.setData1(1);
+        fftValue.setData2(1);
+        fftValue.setData3(1);
+        fftValue.setCounter(1);
+        fft[0] = fftValue;
+        fft[1] = fftValue;
+        fft[2] = new FftValue();
+        fft[3] = fftValue;
+        for (int i = 0; i < 15; i++) {
+            fftValues.add(fft);
+        }
+        setBrainiacManagerPrivateField(brainiacManager, "fftValues", fftValues);
+        brainiacManager.enableIndicators();
+        ((Runnable) getBrainiacManagerPrivateField(brainiacManager, "enableIndicatorsCallback")).run();
+    }
+
+    @Test
+    public void defineBasicAverageValuesForRangeCounterNullChannel4() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        ArrayList<FftValue[]> fftValues = new ArrayList<>();
+        FftValue[] fft = new FftValue[4];
+        FftValue fftValue = new FftValue();
+        fftValue.setData1(1);
+        fftValue.setData2(1);
+        fftValue.setData3(1);
+        fftValue.setCounter(1);
+        fft[0] = fftValue;
+        fft[1] = fftValue;
+        fft[2] = fftValue;
+        fft[3] = new FftValue();
+        for (int i = 0; i < 15; i++) {
+            fftValues.add(fft);
+        }
+        setBrainiacManagerPrivateField(brainiacManager, "fftValues", fftValues);
+        brainiacManager.enableIndicators();
+        ((Runnable) getBrainiacManagerPrivateField(brainiacManager, "enableIndicatorsCallback")).run();
+    }
+
+    @Test
+    public void defineBasicAverageValuesForRangeCounterNotNull() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        ArrayList<FftValue[]> fftValues = new ArrayList<>();
+        FftValue[] fft = new FftValue[4];
+        FftValue fftValue = new FftValue();
+        fftValue.setData1(1);
+        fftValue.setData2(1);
+        fftValue.setData3(1);
+        fftValue.setCounter(1);
+        fft[0] = fftValue;
+        fft[1] = fftValue;
+        fft[2] = fftValue;
+        fft[3] = fftValue;
+        for (int i = 0; i < 15; i++) {
+            fftValues.add(fft);
+        }
+        setBrainiacManagerPrivateField(brainiacManager, "fftValues", fftValues);
+        brainiacManager.enableIndicators();
+        ((Runnable) getBrainiacManagerPrivateField(brainiacManager, "enableIndicatorsCallback")).run();
+    }
+
+    @Test
+    public void getIndicatorsState() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+        ArrayList<FftValue[]> fftValues = new ArrayList<>();
+        FftValue[] fft = new FftValue[4];
+        FftValue fftValue = new FftValue();
+        fftValue.setData1(1);
+        fftValue.setData2(1);
+        fftValue.setData3(1);
+        fftValue.setCounter(1);
+        fft[0] = fftValue;
+        fft[1] = fftValue;
+        fft[2] = fftValue;
+        fft[3] = fftValue;
+        for (int i = 0; i < 15; i++) {
+            fftValues.add(fft);
+        }
+        setBrainiacManagerPrivateField(brainiacManager, "fftValues", fftValues);
+        brainiacManager.enableIndicators();
+        ((Runnable) getBrainiacManagerPrivateField(brainiacManager, "enableIndicatorsCallback")).run();
+        brainiacManager.getIndicatorsState();
+    }
+
+    @Test
+    public void processColorIndicatorsGreen() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 5};
+        BasicValues basicValues = new BasicValues(5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processColorIndicators", averages);
+    }
+
+    @Test
+    public void processColorIndicatorsYellow() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 1};
+        BasicValues basicValues = new BasicValues(7D, 7D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processColorIndicators", averages);
+    }
+
+    @Test
+    public void processColorIndicatorsRed1() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 10};
+        BasicValues basicValues = new BasicValues(10D, 7D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processColorIndicators", averages);
+    }
+
+    @Test
+    public void processColorIndicatorsRed2() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 10};
+        BasicValues basicValues = new BasicValues(5D, 11D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processColorIndicators", averages);
+    }
+
+    @Test
+    public void processXYValuesPositiveRelaxation25() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 10};
+        BasicValues basicValues = new BasicValues(5D, 5D, 15D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesPositiveRelaxation50() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 5};
+        BasicValues basicValues = new BasicValues(5D, 10D, 15D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesPositiveRelaxation75() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 5};
+        BasicValues basicValues = new BasicValues(5D, 10D, 15D, 5D, 10D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesPositiveRelaxation100() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 5};
+        BasicValues basicValues = new BasicValues(5D, 10D, 5D, 5D, 10D, 5D, 15D, 5D, 3D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesPositiveHighRelaxation25() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 10};
+        BasicValues basicValues = new BasicValues(5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 15D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesPositiveHighRelaxation50() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 5};
+        BasicValues basicValues = new BasicValues(5D, 10D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 15D, 5D, 3D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesPositiveHighRelaxation75() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 5};
+        BasicValues basicValues = new BasicValues(5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 15D, 5D, 15D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesPositiveHighRelaxation100() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 5};
+        BasicValues basicValues = new BasicValues(5D, 10D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 15D, 5D, 3D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesPositiveDream50() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {10, 5};
+        BasicValues basicValues = new BasicValues(5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesNegativeNormalActivity25() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 5};
+        BasicValues basicValues = new BasicValues(10D, 10D, 5D, 3D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesNegativeNormalActivity50() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 10};
+        BasicValues basicValues = new BasicValues(10D, 5D, 5D, 3D, 5D, 15D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesNegativeNormalActivity75() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 10};
+        BasicValues basicValues = new BasicValues(10D, 5D, 5D, 3D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesNegativeNormalActivity100() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 10};
+        BasicValues basicValues = new BasicValues(10D, 5D, 5D, 10D, 5D, 5D, 5D, 3D, 5D, 15D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesNegativeAgitation25() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 5};
+        BasicValues basicValues = new BasicValues(10D, 10D, 5D, 5D, 5D, 5D, 5D, 10D, 5D, 5D, 5D, 3D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesNegativeAgitation50() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 5};
+        BasicValues basicValues = new BasicValues(10D, 3D, 5D, 5D, 5D, 5D, 5D, 10D, 5D, 5D, 5D, 3D, 5D, 10D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesNegativeAgitation75() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 5};
+        BasicValues basicValues = new BasicValues(10D, 3D, 5D, 5D, 5D, 5D, 5D, 10D, 5D, 5D, 5D, 3D, 5D, 3D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesNegativeAgitation100() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 5};
+        BasicValues basicValues = new BasicValues(10D, 3D, 5D, 5D, 5D, 5D, 5D, 10D, 5D, 5D, 5D, 10D, 5D, 5D, 5D, 3D, 5D, 10D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
+    @Test
+    public void processXYValuesNegativeHighAgitation50() throws Exception {
+        BrainiacManager brainiacManager = BrainiacManager.getBrainiacManager(activity);
+
+        double[] averages = {5, 5};
+        BasicValues basicValues = new BasicValues(60D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D, 5D);
+        setBrainiacManagerPrivateField(brainiacManager, "basicValues", basicValues);
+        invokeBrainiacManagerPrivateMethod(brainiacManager, double[].class, "processXYValues", averages);
+    }
+
     private static void setBrainiacManagerPrivateField(BrainiacManager brainiacManager, String name, Object value) {
         try {
             TestUtils.setPrivateField(brainiacManager, BrainiacManager.class.getDeclaredField(name), value);
@@ -250,6 +643,15 @@ public class BrainiacManagerTest {
         try {
             return TestUtils.getPrivateField(brainiacManager, BrainiacManager.class.getDeclaredField(name));
         } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static Object invokeBrainiacManagerPrivateMethod(BrainiacManager brainiacManager, Class typeParameters, String name, Object... args) {
+        try {
+            return TestUtils.invokePrivateMethod(brainiacManager, BrainiacManager.class.getDeclaredMethod(name, typeParameters), args);
+        } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
         return null;

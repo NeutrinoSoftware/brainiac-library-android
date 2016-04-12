@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android'
     gitUrl = 'https://github.com/NeutrinoSoftware/brainiac-library-android.git'
 
-    libraryVersion = '0.6.1'
+    libraryVersion = '0.6.2'
 
     developerId = 'neutrinosoftware'
     developerName = 'LTD Neutrino'
@@ -33,7 +33,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
-        versionName "0.6.1"
+        versionName "0.6.2"
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
