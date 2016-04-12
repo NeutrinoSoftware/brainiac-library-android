@@ -1,18 +1,9 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 23
     buildToolsVersion "22.0.1"
 
-    signingConfigs {
-        release {
-            keyAlias 'brainiac'
-            keyPassword 'br@in1acl1br@ry'
-            storeFile file('../brainiac-library-android.jks')
-            storePassword 'br@in1acl1br@ry'
-        }
-    }
     defaultConfig {
         applicationId "net.neutrinosoft.brainactivity"
         minSdkVersion 18
@@ -20,34 +11,16 @@ android {
         versionCode 1
         versionName "0.3"
     }
-    buildTypes {
-        debug {
-            minifyEnabled false
-            signingConfig signingConfigs.release
-        }
-        release {
-            release {
-                minifyEnabled true
-                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-                signingConfig signingConfigs.release
 
-                ext.enableCrashlytics = true
-                ext.betaDistributionReleaseNotes = ""
+    lintOptions {
+        abortOnError false
+    }
 
-                ext.betaDistributionGroupAliases = "brainiac"
-            }
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
 }
 
 
 repositories {
     maven { url "https://jitpack.io" }
-    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
@@ -56,8 +29,5 @@ dependencies {
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
     compile 'com.squareup:otto:1.3.8'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
-        transitive = true
-    }
     compile 'net.neutrinosoft.brainiac:brainiac:0.6.2'
 }
