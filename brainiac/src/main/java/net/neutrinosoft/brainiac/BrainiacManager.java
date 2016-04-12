@@ -1,9 +1,7 @@
 package net.neutrinosoft.brainiac;
 
-import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothAdapter.LeScanCallback;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -11,14 +9,10 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
-import android.content.pm.PackageManager;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.widget.Toast;
 
+import net.neutrinosoft.brainiac.bluetooth.DefaultBluetoothProvider;
 import net.neutrinosoft.brainiac.callback.OnDeviceCallback;
 import net.neutrinosoft.brainiac.callback.OnIndicatorsStateChangedCallback;
 import net.neutrinosoft.brainiac.callback.OnReceiveDataCallback;
@@ -50,11 +44,12 @@ public class BrainiacManager extends BluetoothGattCallback {
     private static ArrayList<FftValue[]> fftValues = new ArrayList<>();
     private static int batteryLevel = 0;
     private Activity context;
-    private BluetoothAdapter bluetoothAdapter;
+    private DefaultBluetoothProvider bluetoothProvider;
     private BluetoothDevice neuroBLE;
     private BluetoothGatt bluetoothGatt;
     private OnReceiveFftDataCallback onReceiveFftDataCallback;
     private OnDeviceCallback onDeviceCallback;
+    private OnDeviceCallback onDeviceFoundCallback;
     private OnScanCallback onScanCallback;
     private OnIndicatorsStateChangedCallback onIndicatorsStateChangedCallback;
     private boolean isTestMode;
@@ -71,8 +66,6 @@ public class BrainiacManager extends BluetoothGattCallback {
     private double averageBasicAlpha;
     private double averageBasicBeta;
     private BasicValues basicValues;
-    private ScanCallback scanCallback;
-    private LeScanCallback leScanCallback;
 
     /**
      * Register a callback to be invoked when fft data received.
@@ -116,7 +109,7 @@ public class BrainiacManager extends BluetoothGattCallback {
 
     private BrainiacManager(Activity context) {
         this.context = context;
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothProvider = new DefaultBluetoothProvider(context, BluetoothAdapter.getDefaultAdapter());
     }
 
     /**
@@ -217,34 +210,45 @@ public class BrainiacManager extends BluetoothGattCallback {
         }
         values.clear();
         fftValues.clear();
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                if (scanCallback == null) {
-                    scanCallback = new ScanCallback() {
-                        @Override
-                        public void onScanResult(int callbackType, ScanResult result) {
-                            BluetoothDevice device = result.getDevice();
-                            onDeviceFound(device);
-                        }
-                    };
-                }
-                bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
-            } else {
-                Log.d(TAG, "Location permission does not allowed");
-                Toast.makeText(context, "Location permission does not allowed", Toast.LENGTH_SHORT).show();
-                stopScan();
+
+        bluetoothProvider.startScan();
+
+        initOnDeviceFoundCallback();
+        bluetoothProvider.setOnDeviceCallback(onDeviceFoundCallback);
+    }
+
+    private void initOnDeviceFoundCallback() {
+        onDeviceFoundCallback = new OnDeviceCallback() {
+            @Override
+            public void onDeviceFound(BluetoothDevice device) {
+                deviceFound(device);
             }
-        } else {
-            if (leScanCallback == null) {
-                leScanCallback = new LeScanCallback() {
-                    @Override
-                    public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-                        onDeviceFound(device);
-                    }
-                };
+
+            @Override
+            public void onDeviceConnected(BluetoothDevice device) {
+
             }
-            bluetoothAdapter.startLeScan(leScanCallback);
-        }
+
+            @Override
+            public void onDeviceConnecting(BluetoothDevice device) {
+
+            }
+
+            @Override
+            public void onDeviceDisconnected(BluetoothDevice device) {
+
+            }
+
+            @Override
+            public void onDeviceConnectionError(BluetoothDevice device) {
+
+            }
+
+            @Override
+            public void onDeviceDisconnecting(BluetoothDevice device) {
+
+            }
+        };
     }
 
     /**
@@ -265,7 +269,20 @@ public class BrainiacManager extends BluetoothGattCallback {
         return isTestMode;
     }
 
-    public void onDeviceFound(BluetoothDevice bluetoothDevice) {
+    /**
+     * Stops an ongoing Bluetooth LE device scan.
+     */
+    public void stopScan() {
+        if (onScanCallback != null) {
+            onScanCallback.onScanStop();
+        }
+        if (bluetoothProvider != null) {
+            bluetoothProvider.stopScan();
+        }
+
+    }
+
+    private void deviceFound(BluetoothDevice bluetoothDevice) {
         String deviceName = bluetoothDevice.getName();
         Log.d(TAG, "onLeScan()");
         Log.d(TAG, deviceName);
@@ -279,23 +296,6 @@ public class BrainiacManager extends BluetoothGattCallback {
             stopScan();
             connectToDevice();
         }
-    }
-
-    /**
-     * Stops an ongoing Bluetooth LE device scan.
-     */
-    public void stopScan() {
-        if (onScanCallback != null) {
-            onScanCallback.onScanStop();
-        }
-        if (bluetoothAdapter != null) {
-            if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
-                bluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
-            } else {
-                bluetoothAdapter.stopLeScan(leScanCallback);
-            }
-        }
-
     }
 
     private void connectToDevice() {
@@ -402,13 +402,13 @@ public class BrainiacManager extends BluetoothGattCallback {
             secondValue.setChannel2(Math.floor(K * BitUtils.getShortFromBigBytes(data[14], data[15])));
             secondValue.setChannel3(Math.floor(K * BitUtils.getShortFromBigBytes(data[16], data[17])));
             secondValue.setChannel4(Math.floor(K * BitUtils.getShortFromBigBytes(data[18], data[19])));
-            BrainiacManager.values.add(secondValue);
+            values.add(secondValue);
 
             if (onReceiveDataCallback != null) {
                 onReceiveDataCallback.onReceiveData(firstValue);
                 onReceiveDataCallback.onReceiveData(secondValue);
             }
-            if (onReceiveFftDataCallback != null && (BrainiacManager.values.size() % 256) == 0) {
+            if (onReceiveFftDataCallback != null && (values.size() % 256) == 0) {
                 onReceiveFftDataCallback.onReceiveData(getFftData());
             }
         } else if (characteristic.getUuid().equals(UUID.fromString(BATTERY_LEVEL_CHARACTERISTIC_UUID))) {
@@ -424,20 +424,6 @@ public class BrainiacManager extends BluetoothGattCallback {
      */
     public int getBatteryLevel() {
         return batteryLevel;
-    }
-
-    private static int average(List<Integer> list) {
-        // 'average' is undefined if there are no elements in the list.
-        if (list == null || list.isEmpty())
-            return 0;
-        // Calculate the summation of the elements in the list
-        long sum = 0;
-        int n = list.size();
-        // Iterating manually is faster than using an enhanced for loop.
-        for (int i = 0; i < n; i++)
-            sum += list.get(i);
-        // We don't want to perform an integer division, so the cast is mandatory.
-        return (int) (sum / n);
     }
 
     /**
@@ -490,7 +476,7 @@ public class BrainiacManager extends BluetoothGattCallback {
                 if (onReceiveDataCallback != null) {
                     onReceiveDataCallback.onReceiveData(value);
                 }
-                if (onReceiveFftDataCallback != null && (BrainiacManager.values.size() % 256) == 0) {
+                if (onReceiveFftDataCallback != null && (values.size() % 256) == 0) {
                     onReceiveFftDataCallback.onReceiveData(getFftData());
                 }
                 handler.postDelayed(this, 4);
@@ -529,7 +515,9 @@ public class BrainiacManager extends BluetoothGattCallback {
 
     public void disableIndicators() {
         if (onIndicatorsStateChangedCallback != null) {
-            handler.removeCallbacks(indicatorsCallBack);
+            if (handler != null) {
+                handler.removeCallbacks(indicatorsCallBack);
+            }
         }
     }
 
@@ -596,10 +584,10 @@ public class BrainiacManager extends BluetoothGattCallback {
                 Log.d(TAG, "beta " + fftValues.get(i)[2].getData3());
             }
 
-            double averageAlpha2 = doubleAverage(alpha2);
-            double averageAlpha4 = doubleAverage(alpha4);
-            double averageBeta1 = doubleAverage(beta1);
-            double averageBeta3 = doubleAverage(beta3);
+            double averageAlpha2 = average(alpha2);
+            double averageAlpha4 = average(alpha4);
+            double averageBeta1 = average(beta1);
+            double averageBeta3 = average(beta3);
             averages[0] = (averageAlpha2 + averageAlpha4) / 2;
             averages[1] = (averageBeta1 + averageBeta3) / 2;
             return averages;
@@ -607,7 +595,7 @@ public class BrainiacManager extends BluetoothGattCallback {
         return null;
     }
 
-    private double doubleAverage(List<Integer> array) {
+    private double average(List<Integer> array) {
         if (array == null || array.isEmpty()) {
             return 0;
         }
